@@ -1,14 +1,15 @@
+import { fs } from "@zenfs/core"
+import { dequal as deepEqual } from "dequal"
+import path from "path-browserify"
 import { Ipc } from "./ipc"
-import { ClientOptions, ClientStatus, SandboxSetup, SandpackError } from "./type"
-import { nullthrows } from "./utils"
+import { ClientOptions, IMessage, SandboxSetup, SandpackBundlerFiles } from "./type"
+import { addPackageJSONIfNeeded, generateHtml, getTemplate, nullthrows } from "./utils"
+import { Message } from "./message"
 
 export class Client {
-  errors: SandpackError[]
-
-  selector: string
-  element: Element
-
-  Ipc: Ipc = Ipc.getInstance()
+  Message = new Message()
+  Ipc!: Ipc
+  Fs!: typeof fs
 
   /**
    * Sandbox configuration: files, setup, customizations;
@@ -21,235 +22,163 @@ export class Client {
    */
   iframe: HTMLIFrameElement
   iframeSelector: string | HTMLIFrameElement
-  status: ClientStatus = "idle";
 
   constructor(
-    selector: string | HTMLIFrameElement,
+    iframeSelector: string | HTMLIFrameElement,
     sandboxSetup: SandboxSetup,
     options: ClientOptions = {}
   ) {
+    this.Message.set({ type: "normal", message: "init-client" })
     this.options = options
     this.sandboxSetup = sandboxSetup
-    this.iframeSelector = selector
+    this.iframeSelector = iframeSelector
 
-    this.errors = []
-    this.status = "initializing"
-
-    if (typeof selector === "string") {
-      this.selector = selector
-      const element = document.querySelector(selector)
-
-      nullthrows(element, `The element '${selector}' was not found`)
-
-      this.element = element!
-      this.iframe = document.createElement("iframe")
-      this.iframe.style.border = "0"
-      this.iframe.style.width = this.options.width || "100%"
-      this.iframe.style.height = this.options.height || "100%"
-      this.iframe.style.overflow = "hidden"
-      nullthrows(
-        this.element.parentNode,
-        "The given iframe does not have a parent."
-      )
-      this.element.parentNode!.replaceChild(this.iframe, this.element)
-    } else {
-      this.element = selector
-      this.iframe = selector
-    }
-
-    if (!this.iframe.getAttribute("playground")) {
-      this.iframe.setAttribute(
-        "playground",
-        "allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts allow-downloads allow-pointer-lock"
-      )
-
-      this.iframe.setAttribute(
-        "allow",
-        "accelerometer; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; clipboard-write;"
-      )
-    }
-
+    this.iframe = this.initializeIframe(iframeSelector)
     this.setLocationURLIntoIFrame()
+    this.Message.set({ type: "success", message: "init-client-success" })
+  }
+
+  public async init() {
+    this.Message.set({ type: "normal", message: "init-playground" })
+    this.Ipc = await Ipc.getInstance()
+    this.Fs = fs
+    const files = this.getFiles()
+    this.setFile(files)
+    this.setTemplate()
+    this.Message.set({ type: "success", message: "init-playground-success" })
+    return true
+  }
+
+  public async build() {
+    this.Message.set({ type: "normal", message: "building" })
+    const modules = await this.Ipc.postMessage({
+      type: "build",
+      entry: this.sandboxSetup.entry,
+    }) as any[]
+    const htmlFile = this.Fs.readFileSync("/index.html", "utf-8")
+    const html = generateHtml(htmlFile, modules)
+    const iframeDoc = this.iframe.contentDocument || this.iframe.contentWindow?.document
+    if (iframeDoc) {
+      iframeDoc.open()
+      iframeDoc.write(html)
+      iframeDoc.close()
+    }
+    this.Message.set({ type: "success", message: "build-success" })
   }
 
   public setLocationURLIntoIFrame(): void {
     const urlSource = this.options.startRoute || ""
     this.iframe.contentWindow?.location.replace(urlSource)
+    this.iframe.src = urlSource
   }
 
-  // destroy(): void {
-  //   this.unsubscribeChannelListener()
-  //   this.unsubscribeGlobalListener()
-  //   this.iframeProtocol.cleanup()
-  // }
+  private initializeIframe(iframeSelector: string | HTMLIFrameElement): HTMLIFrameElement {
+    this.Message.set({ type: "normal", message: "init-preview" })
+    let iframe: HTMLIFrameElement
 
-  // updateOptions(options: ClientOptions): void {
-  //   if (!deepEqual(this.options, options)) {
-  //     this.options = options
-  //     this.updateSandbox()
-  //   }
-  // }
+    if (typeof iframeSelector === "string") {
+      const element = document.querySelector(iframeSelector)
+      nullthrows(element, `The element '${iframeSelector}' was not found`)
 
-  // updateSandbox(
-  //   sandboxSetup = this.sandboxSetup,
-  //   isInitializationCompile?: boolean
-  // ): void {
-  //   this.sandboxSetup = {
-  //     ...this.sandboxSetup,
-  //     ...sandboxSetup,
-  //   }
+      iframe = document.createElement("iframe")
 
-  //   const files = this.getFiles()
+      nullthrows(
+        element?.parentNode,
+        "The given iframe does not have a parent."
+      )
+      element?.parentNode!.replaceChild(iframe, element)
+    } else {
+      iframe = iframeSelector
+    }
 
-  //   const modules: Modules = Object.keys(files).reduce(
-  //     (prev, next) => ({
-  //       ...prev,
-  //       [next]: {
-  //         code: files[next].code,
-  //         path: next,
-  //       },
-  //     }),
-  //     {}
-  //   )
+    iframe.style.border = "0"
+    iframe.style.width = this.options.width || "100%"
+    iframe.style.height = this.options.height || "100%"
+    iframe.style.overflow = "hidden"
 
-  //   let packageJSON = JSON.parse(
-  //     createPackageJSON(
-  //       this.sandboxSetup.dependencies,
-  //       this.sandboxSetup.devDependencies,
-  //       this.sandboxSetup.entry
-  //     )
-  //   )
-  //   try {
-  //     packageJSON = JSON.parse(files["/package.json"].code)
-  //   } catch (e) {
-  //     console.error(
-  //       createError(
-  //         "could not parse package.json file: " + (e as Error).message
-  //       )
-  //     )
-  //   }
+    if (!iframe.getAttribute("playground")) {
+      iframe.setAttribute(
+        "playground",
+        "allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts allow-downloads allow-pointer-lock"
+      )
 
-  //   // TODO move this to a common format
-  //   const normalizedModules = Object.keys(files).reduce(
-  //     (prev, next) => ({
-  //       ...prev,
-  //       [next]: {
-  //         content: files[next].code,
-  //         path: next,
-  //       },
-  //     }),
-  //     {}
-  //   )
+      iframe.setAttribute(
+        "allow",
+        "accelerometer; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; clipboard-write;"
+      )
+    }
 
-  //   this.dispatch({
-  //     ...this.options,
-  //     type: "compile",
-  //     codesandbox: true,
-  //     version: 3,
-  //     isInitializationCompile,
-  //     modules,
-  //     reactDevTools: this.options.reactDevTools,
-  //     externalResources: this.options.externalResources || [],
-  //     hasFileResolver: Boolean(this.options.fileResolver),
-  //     disableDependencyPreprocessing:
-  //       this.sandboxSetup.disableDependencyPreprocessing,
-  //     template:
-  //       this.sandboxSetup.template ||
-  //       getTemplate(packageJSON, normalizedModules),
-  //     showOpenInCodeSandbox: this.options.showOpenInCodeSandbox ?? true,
-  //     showErrorScreen: this.options.showErrorScreen ?? true,
-  //     showLoadingScreen: this.options.showLoadingScreen ?? false,
-  //     skipEval: this.options.skipEval || false,
-  //     clearConsoleDisabled: !this.options.clearConsoleOnFirstCompile,
-  //     logLevel: this.options.logLevel ?? SandpackLogLevel.Info,
-  //     customNpmRegistries: this.options.customNpmRegistries,
-  //     teamId: this.options.teamId,
-  //     sandboxId: this.options.sandboxId,
-  //   })
-  // }
+    this.Message.set({ type: "success", message: "init-preview-success" })
+    return iframe
+  }
 
-  // public dispatch(message: SandpackRuntimeMessage): void {
-  //   /**
-  //    * Intercept "refresh" dispatch: this will make sure
-  //    * that the iframe is still in the location it's supposed to be.
-  //    * External links inside the iframe will change the location and
-  //    * prevent the user from navigating back.
-  //    */
-  //   if (message.type === "refresh") {
-  //     this.setLocationURLIntoIFrame()
-  //   }
+  public async updateOptions(options: ClientOptions): Promise<boolean> {
+    if (!deepEqual(this.options, options)) {
+      this.options = options
+      await this.updateSandbox()
+    }
+    return true
+  }
 
-  //   this.iframeProtocol.dispatch(message)
-  // }
+  public async updateSandbox(
+    sandboxSetup = this.sandboxSetup,
+  ): Promise<boolean> {
+    this.sandboxSetup = {
+      ...this.sandboxSetup,
+      ...sandboxSetup,
+    }
 
-  // public listen(listener: ListenerFunction): UnsubscribeFunction {
-  //   return this.iframeProtocol.channelListen(listener)
-  // }
+    const files = this.getFiles()
+    this.setFile(files)
 
-  // /**
-  //  * Get the URL of the contents of the current sandbox
-  //  */
-  // public getCodeSandboxURL(): Promise<{
-  //   sandboxId: string
-  //   editorUrl: string
-  //   embedUrl: string
-  // }> {
-  //   const files = this.getFiles()
+    if (sandboxSetup.template !== this.sandboxSetup.template) {
+      this.setTemplate()
+    }
 
-  //   const paramFiles = Object.keys(files).reduce(
-  //     (prev, next) => ({
-  //       ...prev,
-  //       [next.replace("/", "")]: {
-  //         content: files[next].code,
-  //         isBinary: false,
-  //       },
-  //     }),
-  //     {}
-  //   )
+    await this.Ipc.postMessage({
+      type: "build",
+      entry: this.sandboxSetup.entry
+    })
 
-  //   return fetch("https://codesandbox.io/api/v1/sandboxes/define?json=1", {
-  //     method: "POST",
-  //     body: JSON.stringify({ files: paramFiles }),
-  //     headers: {
-  //       Accept: "application/json",
-  //       "Content-Type": "application/json",
-  //     },
-  //   })
-  //     .then((x) => x.json())
-  //     .then((res: { sandbox_id: string }) => ({
-  //       sandboxId: res.sandbox_id,
-  //       editorUrl: `https://codesandbox.io/s/${res.sandbox_id}`,
-  //       embedUrl: `https://codesandbox.io/embed/${res.sandbox_id}`,
-  //     }))
-  // }
+    return true
+  }
 
-  // public getTranspilerContext = (): Promise<
-  //   Record<string, Record<string, unknown>>
-  // > =>
-  //   new Promise((resolve) => {
-  //     const unsubscribe = this.listen((message) => {
-  //       if (message.type === "transpiler-context") {
-  //         resolve(message.data)
+  private getFiles(): SandpackBundlerFiles {
+    const { sandboxSetup } = this
 
-  //         unsubscribe()
-  //       }
-  //     })
+    if (sandboxSetup.files?.["/package.json"] === undefined) {
+      return addPackageJSONIfNeeded(
+        sandboxSetup.files,
+        sandboxSetup.name,
+        sandboxSetup.entry,
+        sandboxSetup.dependencies,
+        sandboxSetup.devDependencies,
+      )
+    }
 
-  //     this.dispatch({ type: "get-transpiler-context" })
-  //   });
+    return this.sandboxSetup.files
+  }
 
-  // private getFiles(): SandpackBundlerFiles {
-  //   const { sandboxSetup } = this
+  private setFile(files: SandpackBundlerFiles): void {
+    Object.entries(files).forEach(([filePath, content]) => {
+      const fullPath = path.join('/', filePath)
+      const dir = path.dirname(fullPath)
 
-  //   if (sandboxSetup.files["/package.json"] === undefined) {
-  //     return addPackageJSONIfNeeded(
-  //       sandboxSetup.files,
-  //       sandboxSetup.dependencies,
-  //       sandboxSetup.devDependencies,
-  //       sandboxSetup.entry
-  //     )
-  //   }
+      // 创建目录（如果不存在）
+      if (!this.Fs.existsSync(dir)) {
+        this.Fs.mkdirSync(dir, { recursive: true })
+      }
 
-  //   return this.sandboxSetup.files
-  // }
+      // 写入文件
+      this.Fs.writeFileSync(fullPath, content.code, 'utf8')
+    })
+  }
+
+  private setTemplate() {
+    const files = getTemplate(this.sandboxSetup.template)
+    if (!files) {
+      return
+    }
+    this.setFile(files)
+  }
 }

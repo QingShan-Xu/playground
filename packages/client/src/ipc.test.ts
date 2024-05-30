@@ -1,12 +1,11 @@
 import { Ipc } from "./ipc"
-import { expect, test, describe, beforeEach } from 'vitest'
-import '@vitest/web-worker'
+import { expect, test, describe, beforeEach, afterEach } from 'vitest'
 
 describe('Ipc', () => {
   let ipc: Ipc
 
-  beforeEach(() => {
-    ipc = Ipc.getInstance()
+  beforeEach(async () => {
+    ipc = await Ipc.getInstance()
   })
 
   test('postMessage should return a promise', () => {
@@ -15,17 +14,18 @@ describe('Ipc', () => {
     expect(promise).toBeInstanceOf(Promise)
   })
 
-  test('worker should receive message and call resolver', () => {
+  test('worker should receive "test-res" and back "test-res"', async () => {
     const args = "test-res"
-    ipc.postMessage(args).then((result) => {
-      expect(result).toEqual(args)
-    })
+    const res = await ipc.postMessage(args)
+    expect(res).toEqual(args)
   })
 
-  test('worker should receive error and call reject', () => {
+  test('worker should receive "test-rej" and back Error: "test-rej"', async () => {
     const args = "test-rej"
-    ipc.postMessage(args).catch((error) => {
-      expect(error).toEqual(args)
-    })
+    try {
+      await ipc.postMessage(args)
+    } catch (error) {
+      expect(error).toEqual(new Error(args))
+    }
   })
 })

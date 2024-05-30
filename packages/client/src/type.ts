@@ -1,11 +1,12 @@
 
 
 export interface SandboxSetup {
+  name: string
   files: SandpackBundlerFiles
   dependencies?: Dependencies
   devDependencies?: Dependencies
   /**
-   * default: src/index.*
+   * default:/index.js
    */
   entry?: string
   /**
@@ -72,4 +73,9 @@ export interface SandpackError {
   column?: number
   path?: string
   title?: string
+}
+
+export interface IMessage {
+  message: string,
+  type: "success" | "warn" | "error" | "normal"
 }

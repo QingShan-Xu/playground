@@ -2,14 +2,38 @@
   "name": "@playground/client",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "vitest --ui"
-  },
   "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codesandbox/sandpack"
+  },
   "author": "",
   "license": "ISC",
+  "module": "./dist/client.js",
+  "main": "./dist/client.umd.cjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/client.js",
+      "require": "./dist/client.umd.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "test": "vitest --ui --browser.provider=playwright --browser.name=chromium",
+    "clean": "pnpm dlx npkill"
+  },
+  "dependencies": {
+    "@zenfs/core": "^0.12.5",
+    "dequal": "2.0.3",
+    "esbuild-wasm": "^0.21.3",
+    "idb-keyval": "^6.2.1",
+    "outvariant": "^1.4.2",
+    "path-browserify": "^1.0.1"
+  },
   "devDependencies": {
-    "outvariant": "^1.4.2"
+    "@types/path-browserify": "^1.0.2"
   }
 }

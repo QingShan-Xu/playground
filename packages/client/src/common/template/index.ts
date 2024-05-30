@@ -1,0 +1,1 @@
+export { ReactTemplate } from "./react"

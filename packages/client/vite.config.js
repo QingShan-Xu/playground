@@ -1,24 +1,33 @@
-import { resolve } from 'path'
 import { defineConfig } from 'vite'
+import dts from 'vite-plugin-dts'
+import pkg from "./package.json"
+import replace from "@rollup/plugin-replace"
 
 export default defineConfig({
   build: {
     lib: {
-      // Could also be a dictionary or array of multiple entry points
-      entry: resolve(__dirname, 'src/main.js'),
-      name: 'MyLib',
-      // the proper extensions will be added
-      fileName: 'my-lib',
+      entry: 'src/index.ts',
+      name: 'Client',
     },
     rollupOptions: {
-      // 确保外部化处理那些你不想打包进库的依赖
-      external: ['vue'],
-      output: {
-        // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
-        globals: {
-          vue: 'Vue',
-        },
-      },
+      external: Object.keys({
+        ...(pkg?.dependencies || {}),
+        ...(pkg?.devDependencies || {}),
+        ...(pkg?.peerDependencies || {}),
+      }),
     },
   },
+  plugins: [
+    dts({
+      rollupTypes: true,
+    }),
+    replace({
+      preventAssignment: true,
+      values: {
+        global: "globalThis",
+        "process.env.CODESANDBOX_ENV": `"${process.env.CODESANDBOX_ENV}"`,
+        "process.env.PACKAGE_VERSION": `"${pkg.version}"`,
+      },
+    }),
+  ],
 })

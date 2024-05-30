@@ -1,5 +1,6 @@
-import { nullthrows } from "./utils"
 import backend from "./backend?worker&inline"
+import { nullthrows } from "./utils"
+import { configure, Port } from "@zenfs/core"
 
 export class Ipc {
   private static instance: Ipc
@@ -12,25 +13,52 @@ export class Ipc {
     this.worker.addEventListener("message", ({ data }) => {
       const { result, error, ipcId } = data
       const currentCallback = this.callBackFuncs.get(ipcId)
-      nullthrows(currentCallback)
+      if (!currentCallback) {
+        return
+      }
       error && currentCallback?.reject(error)
       result && currentCallback?.resolver(result)
       this.callBackFuncs.delete(ipcId)
     })
   }
 
-  postMessage(args: any) {
-    this.ipcId = this.ipcId++
-    this.worker.postMessage({ args, ipcId: this.ipcId })
-    return new Promise((resolver, reject) => {
-      this.callBackFuncs.set(this.ipcId, { resolver, reject })
+  private async initFs(): Promise<"init-fs-success"> {
+    if (Ipc.instance) return "init-fs-success"
+    const res = await this.postMessage("init-fs")
+    nullthrows(res === "init-fs-success", "init-fs-error")
+    await configure({
+      backend: Port,
+      port: this.worker as any
     })
+    return "init-fs-success"
   }
 
-  public static getInstance(): Ipc {
+  private async initEsbuild(): Promise<"init-esbuild-success"> {
+    if (Ipc.instance) return "init-esbuild-success"
+    const res = await this.postMessage("init-esbuild")
+    nullthrows(res === "init-esbuild-success", "init-esbuild-error")
+    return res as "init-esbuild-success"
+  }
+
+  public static async getInstance(): Promise<Ipc> {
     if (!Ipc.instance) {
-      Ipc.instance = new Ipc()
+      const ipc = new Ipc()
+      await ipc.initFs()
+      await ipc.initEsbuild()
+      Ipc.instance = ipc
     }
     return Ipc.instance
+  }
+
+  destory() {
+    this.worker.terminate()
+  }
+
+  postMessage(args: any) {
+    this.ipcId++
+    return new Promise((resolver, reject) => {
+      this.callBackFuncs.set(this.ipcId, { resolver, reject })
+      this.worker.postMessage({ args, ipcId: this.ipcId })
+    })
   }
 }
