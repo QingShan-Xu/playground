@@ -5,18 +5,18 @@
   "keywords": [],
   "repository": {
     "type": "git",
-    "url": "https://github.com/codesandbox/sandpack"
+    "url": "https://github.com/QingShan-Xu/playground/tree/master/packages/client"
   },
   "author": "",
   "license": "ISC",
-  "module": "./dist/client.js",
-  "main": "./dist/client.umd.cjs",
+  "module": "./dist/client.mjs",
+  "main": "./dist/client.umd.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/client.js",
-      "require": "./dist/client.umd.cjs"
+      "import": "./dist/client.mjs",
+      "require": "./dist/client.umd.js"
     }
   },
   "scripts": {

@@ -20,6 +20,9 @@ export default defineConfig({
   plugins: [
     dts({
       rollupTypes: true,
+      compilerOptions: {
+        strict: false
+      }
     }),
     replace({
       preventAssignment: true,

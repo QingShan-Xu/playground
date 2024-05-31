@@ -31,12 +31,7 @@ export function addPackageJSONIfNeeded(
 
   const packageJsonFile = normalizedFilesPath["/package.json"]
 
-  /**
-   * Create a new package json
-   */
   if (!packageJsonFile) {
-    nullthrows(dependencies, DEPENDENCY_ERROR_MESSAGE)
-
     normalizedFilesPath["/package.json"] = {
       code: createPackageJSON(name, entry, dependencies, devDependencies),
     }
@@ -44,9 +39,6 @@ export function addPackageJSONIfNeeded(
     return normalizedFilesPath
   }
 
-  /**
-   * Merge package json with custom setup
-   */
   if (packageJsonFile) {
     const packageJsonContent = JSON.parse(packageJsonFile.code)
 
@@ -65,7 +57,6 @@ export function addPackageJSONIfNeeded(
     if (devDependencies) {
       packageJsonContent.devDependencies = {
         ...(packageJsonContent.devDependencies ?? {}),
-        ...(devDependencies ?? {}),
       }
     }
 
@@ -98,7 +89,6 @@ export function createPackageJSON(
     2
   )
 }
-
 
 export const normalizePath = <R>(path: R): R => {
   if (typeof path === "string") {
@@ -191,3 +181,6 @@ export const generateHtml = (html: string, modules: {
   })
   return dom.documentElement.outerHTML
 }
+
+
+export const isDev = "development"

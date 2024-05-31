@@ -50,14 +50,27 @@ export class Ipc {
     return Ipc.instance
   }
 
-  destory() {
+  destroy() {
     this.worker.terminate()
   }
 
-  postMessage(args: any) {
+  postMessage<T>(args: any, timeout = 10000): Promise<T> {
     this.ipcId++
     return new Promise((resolver, reject) => {
-      this.callBackFuncs.set(this.ipcId, { resolver, reject })
+      const timer = setTimeout(() => {
+        this.callBackFuncs.delete(this.ipcId)
+        reject(new Error("Request timed out: " + JSON.stringify(args)))
+      }, timeout)
+      this.callBackFuncs.set(this.ipcId, {
+        resolver: (result: T) => {
+          clearTimeout(timer)
+          resolver(result)
+        },
+        reject: (error: any) => {
+          clearTimeout(timer)
+          reject(error)
+        }
+      })
       this.worker.postMessage({ args, ipcId: this.ipcId })
     })
   }

@@ -33,6 +33,7 @@ export const ReactTemplate = {
   "/src/style.css": {
     code: `
   body {
+  overflow: hidden;
   background: transparent; /* Make it white if you need */
   padding: 0 24px;
   margin: 0;

@@ -3,23 +3,17 @@ import { dequal as deepEqual } from "dequal"
 import path from "path-browserify"
 import { Ipc } from "./ipc"
 import { ClientOptions, IMessage, SandboxSetup, SandpackBundlerFiles } from "./type"
-import { addPackageJSONIfNeeded, generateHtml, getTemplate, nullthrows } from "./utils"
+import { addPackageJSONIfNeeded, generateHtml, getTemplate, isDev, nullthrows } from "./utils"
 import { Message } from "./message"
+
 
 export class Client {
   Message = new Message()
   Ipc!: Ipc
   Fs!: typeof fs
 
-  /**
-   * Sandbox configuration: files, setup, customizations;
-   */
   sandboxSetup: SandboxSetup
   options: ClientOptions
-
-  /**
-   * DOM bindings
-   */
   iframe: HTMLIFrameElement
   iframeSelector: string | HTMLIFrameElement
 
@@ -28,10 +22,21 @@ export class Client {
     sandboxSetup: SandboxSetup,
     options: ClientOptions = {}
   ) {
+    if (isDev) {
+      const names: Array<keyof SandboxSetup> = ["name", "files", "entry"]
+      names.forEach(name => {
+        if (!sandboxSetup[name]) {
+          throw new Error(`${name} is required`)
+        }
+      })
+    }
+
     this.Message.set({ type: "normal", message: "init-client" })
     this.options = options
     this.sandboxSetup = sandboxSetup
     this.iframeSelector = iframeSelector
+
+
 
     this.iframe = this.initializeIframe(iframeSelector)
     this.setLocationURLIntoIFrame()
@@ -72,6 +77,11 @@ export class Client {
     this.iframe.src = urlSource
   }
 
+  /**
+   * Initialize the iframe for the client
+   * @param iframeSelector - The selector or element for the iframe
+   * @returns The initialized iframe element
+   */
   private initializeIframe(iframeSelector: string | HTMLIFrameElement): HTMLIFrameElement {
     this.Message.set({ type: "normal", message: "init-preview" })
     let iframe: HTMLIFrameElement

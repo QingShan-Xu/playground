@@ -1,0 +1,43 @@
+.rc-tree-treenode {
+  display: flex;
+  height: 1.75rem;
+
+  .rc-tree-indent {
+    display: flex;
+    flex: none;
+    .rc-tree-indent-unit {
+      display: block;
+      width: 16px;
+    }
+  }
+
+  .rc-tree-switcher {
+    user-select: none;
+    flex: none;
+    width: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .rc-tree-node-content-wrapper {
+    display: flex;
+    flex: auto;
+
+    .rc-tree-iconEle {
+      flex: none;
+      user-select: none;
+      width: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .rc-tree-title {
+      display: flex;
+      align-items: center;
+      flex: auto;
+      text-wrap: nowrap;
+    }
+  }
+}

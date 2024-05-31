@@ -3,12 +3,10 @@
 export interface SandboxSetup {
   name: string
   files: SandpackBundlerFiles
+  entry: string
+
   dependencies?: Dependencies
   devDependencies?: Dependencies
-  /**
-   * default:/index.js
-   */
-  entry?: string
   /**
    * What template we use, if not defined we infer the template from the dependencies or files.
    *
@@ -33,12 +31,6 @@ export interface ClientOptions {
    * Height of iframe.
    */
   height?: string
-  showErrorScreen?: boolean
-  showLoadingScreen?: boolean
-  /**
-   * CodeSandbox sandbox id: used internally by codesandbox
-   */
-  sandboxId?: string
 }
 
 export interface SandpackBundlerFile {
