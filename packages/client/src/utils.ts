@@ -1,23 +1,27 @@
-import { invariant } from "outvariant"
-import { Dependencies, SandpackBundlerFiles, SandpackTemplate } from "./type"
-import pathBrowser, { extname } from "path-browserify"
-import { ReactTemplate } from "./common/template"
-import { createStore, get, set } from 'idb-keyval'
-import { OutputFile } from "esbuild-wasm"
+import type { OutputFile } from "esbuild-wasm";
+import { createStore, get, set } from "idb-keyval";
+import { invariant } from "outvariant";
+import pathBrowser, { extname } from "path-browserify";
 
-const DEPENDENCY_ERROR_MESSAGE = `"dependencies" was not specified - provide either a package.json or a "dependencies" value`
-const ENTRY_ERROR_MESSAGE = `"entry" was not specified - provide either a package.json with the "main" field or an "entry" value`
+import { ReactTemplate } from "./common/template";
+import type { Dependencies, SandpackBundlerFiles, SandpackTemplate } from "./type";
 
-export const bundleList: { url: string, type: "js" | "css" }[] = []
+const DEPENDENCY_ERROR_MESSAGE = `"dependencies" was not specified - provide either a package.json or a "dependencies" value`;
+const ENTRY_ERROR_MESSAGE = `"entry" was not specified - provide either a package.json with the "main" field or an "entry" value`;
 
-const customStore = createStore('node_modules', 'playground_store')
+export const bundleList: Array<{ url: string; type: "js" | "css" }> = [];
+
+const customStore = createStore("node_modules", "playground_store");
 
 export const createError = (message: string): string =>
-  `[sandpack-client]: ${message}`
+  `[sandpack-client]: ${message}`;
 
-export function nullthrows<T>(value: T | null | undefined, err: string = "Value is nullish") {
-  invariant(value != null, createError(err))
-  return value
+export function nullthrows<T>(
+  value: T | null | undefined,
+  err = "Value is nullish",
+) {
+  invariant(value != null, createError(err));
+  return value;
 }
 
 export function addPackageJSONIfNeeded(
@@ -27,49 +31,49 @@ export function addPackageJSONIfNeeded(
   dependencies?: Dependencies,
   devDependencies?: Dependencies,
 ): SandpackBundlerFiles {
-  const normalizedFilesPath = normalizePath(files)
+  const normalizedFilesPath = normalizePath(files);
 
-  const packageJsonFile = normalizedFilesPath["/package.json"]
+  const packageJsonFile = normalizedFilesPath["/package.json"];
 
   if (!packageJsonFile) {
     normalizedFilesPath["/package.json"] = {
       code: createPackageJSON(name, entry, dependencies, devDependencies),
-    }
+    };
 
-    return normalizedFilesPath
+    return normalizedFilesPath;
   }
 
   if (packageJsonFile) {
-    const packageJsonContent = JSON.parse(packageJsonFile.code)
+    const packageJsonContent = JSON.parse(packageJsonFile.code);
 
     nullthrows(
       !(!dependencies && !packageJsonContent.dependencies),
-      ENTRY_ERROR_MESSAGE
-    )
+      ENTRY_ERROR_MESSAGE,
+    );
 
     if (dependencies) {
       packageJsonContent.dependencies = {
         ...(packageJsonContent.dependencies ?? {}),
         ...(dependencies ?? {}),
-      }
+      };
     }
 
     if (devDependencies) {
       packageJsonContent.devDependencies = {
         ...(packageJsonContent.devDependencies ?? {}),
-      }
+      };
     }
 
     if (entry) {
-      packageJsonContent.main = entry
+      packageJsonContent.main = entry;
     }
 
     normalizedFilesPath["/package.json"] = {
       code: JSON.stringify(packageJsonContent, null, 2),
-    }
+    };
   }
 
-  return normalizedFilesPath
+  return normalizedFilesPath;
 }
 
 export function createPackageJSON(
@@ -86,101 +90,104 @@ export function createPackageJSON(
       devDependencies,
     },
     null,
-    2
-  )
+    2,
+  );
 }
 
 export const normalizePath = <R>(path: R): R => {
   if (typeof path === "string") {
-    return pathBrowser.normalize(path) as R
+    return pathBrowser.normalize(path) as R;
   }
 
   if (Array.isArray(path)) {
-    return path.map(pathBrowser.normalize) as R
+    return path.map(pathBrowser.normalize) as R;
   }
 
   if (typeof path === "object" && path !== null) {
     return Object.entries(path as any).reduce<any>(
       (all, [key, content]: [string, string | any]) => {
-        const fileName = pathBrowser.normalize(key)
-        all[fileName] = content
-        return all
+        const fileName = pathBrowser.normalize(key);
+        all[fileName] = content;
+        return all;
       },
-      {}
-    )
+      {},
+    );
   }
 
-  return null as R
-}
+  return null as R;
+};
 
 export function getTemplate(
   type?: SandpackTemplate,
 ): SandpackBundlerFiles | undefined {
   if (type === "react") {
-    return ReactTemplate
+    return ReactTemplate;
   }
-  return undefined
+  return undefined;
 }
 
 export async function getPkgFromUnpkg(uri: string) {
-  let contents = await get(uri, customStore)
+  let contents = await get(uri, customStore);
   if (!contents) {
-    const res = await (await fetch(new URL(uri, "https://www.unpkg.com/"))).text()
-    res && set(uri, res, customStore)
-    contents = res
+    const res = await (
+      await fetch(new URL(uri, "https://www.unpkg.com/"))
+    ).text();
+    res && set(uri, res, customStore);
+    contents = res;
   }
-  return contents
+  return contents;
 }
 
 export const generateUrl = (item: OutputFile) => {
-  const ext = extname(item.path)
+  const ext = extname(item.path);
 
   if (ext == ".js") {
-    const blob = new Blob([item.text], { type: "application/javascript" })
-    const url = URL.createObjectURL(blob)
+    const blob = new Blob([item.text], { type: "application/javascript" });
+    const url = URL.createObjectURL(blob);
     bundleList.push({
       url,
-      type: "js"
-    })
+      type: "js",
+    });
   }
 
   if (ext == ".css") {
-    const blob = new Blob([item.text], { type: "text/css" })
-    const url = URL.createObjectURL(blob)
+    const blob = new Blob([item.text], { type: "text/css" });
+    const url = URL.createObjectURL(blob);
     bundleList.push({
       url,
-      type: "css"
-    })
+      type: "css",
+    });
   }
-}
+};
 
-export const generateHtml = (html: string, modules: {
-  url: string
-  type: "js" | "css"
-}[]): string => {
-
-  const parse = new DOMParser()
-  const dom = parse.parseFromString(html, 'text/html')
-  modules.forEach(module => {
+export const generateHtml = (
+  html: string,
+  modules: Array<{
+    url: string;
+    type: "js" | "css";
+  }>,
+): string => {
+  const parse = new DOMParser();
+  const dom = parse.parseFromString(html, "text/html");
+  modules.forEach((module) => {
     if (module.type == "js") {
-      const script = dom.createElement('script')
-      script.type = "module"
-      script.src = module.url
-      dom.body.appendChild(script)
-      return
+      const script = dom.createElement("script");
+      script.type = "module";
+      script.src = module.url;
+      dom.body.appendChild(script);
+      return;
     }
 
     if (module.type == "css") {
-      const link = dom.createElement('link')
-      link.rel = "stylesheet"
-      link.type = "text/css"
-      link.href = module.url
-      dom.head.appendChild(link)
-      return
+      const link = dom.createElement("link");
+      link.rel = "stylesheet";
+      link.type = "text/css";
+      link.href = module.url;
+      dom.head.appendChild(link);
+      return;
     }
-  })
-  return dom.documentElement.outerHTML
-}
+  });
+  return dom.documentElement.outerHTML;
+};
 
-
-export const isDev = "development"
+export const isDev = "development";

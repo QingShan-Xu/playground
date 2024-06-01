@@ -1,14 +1,15 @@
-import { Ipc } from "./ipc"
-import { expect, test, describe, beforeEach, afterEach } from 'vitest'
+import { beforeEach, describe, expect, test } from "vitest"
 
-describe('Ipc', () => {
+import { Ipc } from "./ipc"
+
+describe("Ipc", () => {
   let ipc: Ipc
 
   beforeEach(async () => {
     ipc = await Ipc.getInstance()
   })
 
-  test('postMessage should return a promise', () => {
+  test("postMessage should return a promise", () => {
     const args = "test-res"
     const promise = ipc.postMessage(args)
     expect(promise).toBeInstanceOf(Promise)

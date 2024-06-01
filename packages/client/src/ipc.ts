@@ -1,11 +1,12 @@
+import { configure, Port } from "@zenfs/core"
+
 import backend from "./backend?worker&inline"
 import { nullthrows } from "./utils"
-import { configure, Port } from "@zenfs/core"
 
 export class Ipc {
   private static instance: Ipc
-  private callBackFuncs: Map<number, { resolver: Function, reject: Function }> = new Map()
-  private ipcId = 0
+  private callBackFuncs: Map<number, { resolver: (data: unknown) => void; reject: (data: unknown) => void }> = new Map();
+  private ipcId = 0;
   private worker: Worker
 
   private constructor() {
@@ -28,7 +29,7 @@ export class Ipc {
     nullthrows(res === "init-fs-success", "init-fs-error")
     await configure({
       backend: Port,
-      port: this.worker as any
+      port: this.worker as unknown as any,
     })
     return "init-fs-success"
   }
@@ -69,7 +70,7 @@ export class Ipc {
         reject: (error: any) => {
           clearTimeout(timer)
           reject(error)
-        }
+        },
       })
       this.worker.postMessage({ args, ipcId: this.ipcId })
     })

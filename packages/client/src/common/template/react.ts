@@ -11,7 +11,7 @@ export const ReactTemplate = {
     )}
     // Log to console
     console.log('Hello console')
-    `
+    `,
   },
   "/src/index.tsx": {
     code: `
@@ -29,7 +29,8 @@ export const ReactTemplate = {
     <App />
   </StrictMode>
   );
-  `},
+  `,
+  },
   "/src/style.css": {
     code: `
   body {
@@ -47,7 +48,8 @@ export const ReactTemplate = {
   .App {
   color: #72a24d;
   }
-  `},
+  `,
+  },
   "/index.html": {
     code: `
   <!DOCTYPE html>
@@ -60,7 +62,8 @@ export const ReactTemplate = {
       <div id="root"></div>
     </body>
   </html>
-  `},
+  `,
+  },
   "/package.json": {
     code: `
   {
@@ -69,5 +72,6 @@ export const ReactTemplate = {
     "react-dom": "18.0.0"
   }
   }
-  `}
-}
+  `,
+  },
+};

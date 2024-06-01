@@ -22,8 +22,11 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "test": "vitest --ui --browser.provider=playwright --browser.name=chromium",
-    "clean": "pnpm dlx npkill"
+    "test": "vitest",
+    "clean": "pnpm dlx npkill",
+    "lint": "eslint \"**/*.ts?(x)\" --fix",
+    "format": "prettier --write '**/*.{ts,tsx,js,jsx}'",
+    "format:check": "prettier --check '**/*.{ts,tsx}'"
   },
   "dependencies": {
     "@zenfs/core": "^0.12.5",

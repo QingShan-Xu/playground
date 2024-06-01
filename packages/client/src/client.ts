@@ -1,14 +1,24 @@
 import { fs } from "@zenfs/core"
 import { dequal as deepEqual } from "dequal"
 import path from "path-browserify"
-import { Ipc } from "./ipc"
-import { ClientOptions, IMessage, SandboxSetup, SandpackBundlerFiles } from "./type"
-import { addPackageJSONIfNeeded, generateHtml, getTemplate, isDev, nullthrows } from "./utils"
-import { Message } from "./message"
 
+import { Ipc } from "./ipc"
+import { Message } from "./message"
+import type {
+  ClientOptions,
+  SandboxSetup,
+  SandpackBundlerFiles
+} from "./type"
+import {
+  addPackageJSONIfNeeded,
+  generateHtml,
+  getTemplate,
+  isDev,
+  nullthrows,
+} from "./utils"
 
 export class Client {
-  Message = new Message()
+  Message = new Message();
   Ipc!: Ipc
   Fs!: typeof fs
 
@@ -20,11 +30,11 @@ export class Client {
   constructor(
     iframeSelector: string | HTMLIFrameElement,
     sandboxSetup: SandboxSetup,
-    options: ClientOptions = {}
+    options: ClientOptions = {},
   ) {
     if (isDev) {
       const names: Array<keyof SandboxSetup> = ["name", "files", "entry"]
-      names.forEach(name => {
+      names.forEach((name) => {
         if (!sandboxSetup[name]) {
           throw new Error(`${name} is required`)
         }
@@ -35,8 +45,6 @@ export class Client {
     this.options = options
     this.sandboxSetup = sandboxSetup
     this.iframeSelector = iframeSelector
-
-
 
     this.iframe = this.initializeIframe(iframeSelector)
     this.setLocationURLIntoIFrame()
@@ -56,13 +64,14 @@ export class Client {
 
   public async build() {
     this.Message.set({ type: "normal", message: "building" })
-    const modules = await this.Ipc.postMessage({
+    const modules = (await this.Ipc.postMessage({
       type: "build",
       entry: this.sandboxSetup.entry,
-    }) as any[]
+    })) as any[]
     const htmlFile = this.Fs.readFileSync("/index.html", "utf-8")
     const html = generateHtml(htmlFile, modules)
-    const iframeDoc = this.iframe.contentDocument || this.iframe.contentWindow?.document
+    const iframeDoc =
+      this.iframe.contentDocument || this.iframe.contentWindow?.document
     if (iframeDoc) {
       iframeDoc.open()
       iframeDoc.write(html)
@@ -82,7 +91,9 @@ export class Client {
    * @param iframeSelector - The selector or element for the iframe
    * @returns The initialized iframe element
    */
-  private initializeIframe(iframeSelector: string | HTMLIFrameElement): HTMLIFrameElement {
+  private initializeIframe(
+    iframeSelector: string | HTMLIFrameElement,
+  ): HTMLIFrameElement {
     this.Message.set({ type: "normal", message: "init-preview" })
     let iframe: HTMLIFrameElement
 
@@ -94,7 +105,7 @@ export class Client {
 
       nullthrows(
         element?.parentNode,
-        "The given iframe does not have a parent."
+        "The given iframe does not have a parent.",
       )
       element?.parentNode!.replaceChild(iframe, element)
     } else {
@@ -109,12 +120,12 @@ export class Client {
     if (!iframe.getAttribute("playground")) {
       iframe.setAttribute(
         "playground",
-        "allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts allow-downloads allow-pointer-lock"
+        "allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts allow-downloads allow-pointer-lock",
       )
 
       iframe.setAttribute(
         "allow",
-        "accelerometer; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; clipboard-write;"
+        "accelerometer; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; clipboard-write;",
       )
     }
 
@@ -147,7 +158,7 @@ export class Client {
 
     await this.Ipc.postMessage({
       type: "build",
-      entry: this.sandboxSetup.entry
+      entry: this.sandboxSetup.entry,
     })
 
     return true
@@ -171,7 +182,7 @@ export class Client {
 
   private setFile(files: SandpackBundlerFiles): void {
     Object.entries(files).forEach(([filePath, content]) => {
-      const fullPath = path.join('/', filePath)
+      const fullPath = path.join("/", filePath)
       const dir = path.dirname(fullPath)
 
       // 创建目录（如果不存在）
@@ -180,7 +191,7 @@ export class Client {
       }
 
       // 写入文件
-      this.Fs.writeFileSync(fullPath, content.code, 'utf8')
+      this.Fs.writeFileSync(fullPath, content.code, "utf8")
     })
   }
 

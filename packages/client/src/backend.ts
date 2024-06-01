@@ -1,38 +1,50 @@
-import { resolveMountConfig, InMemory, attachFS, fs, promises, umount, mount } from "@zenfs/core"
-import esbuild from "esbuild-wasm"
-import { unpkgPlugin } from "./unpkgPlugin"
-import { bundleList, generateUrl } from "./utils"
+import {
+  resolveMountConfig,
+  InMemory,
+  attachFS,
+  fs,
+  promises,
+  umount,
+  mount,
+} from "@zenfs/core";
+import esbuild from "esbuild-wasm";
+
+import { unpkgPlugin } from "./unpkgPlugin";
+import { bundleList, generateUrl } from "./utils";
 
 self.addEventListener("message", async ({ data }) => {
   try {
-    const result = await trigger(data.args)
-    postMessage({ result, ipcId: data.ipcId })
+    const result = await trigger(data.args);
+    postMessage({ result, ipcId: data.ipcId });
   } catch (error) {
-    postMessage({ error, ipcId: data.ipcId })
+    postMessage({ error, ipcId: data.ipcId });
   }
-})
+});
 
 const handleInitFs = async () => {
-  const rootFs = fs.mounts.get('/')
+  const rootFs = fs.mounts.get("/");
   if (rootFs) {
-    attachFS(self as any, rootFs)
-    return "init-fs-success"
+    attachFS(self as any, rootFs);
+    return "init-fs-success";
   }
 
-  const tmpfs = await resolveMountConfig({ backend: InMemory, name: 'playground' })
-  attachFS(self as any, tmpfs)
-  umount('/')
-  mount('/', tmpfs)
-  return "init-fs-success"
-}
+  const tmpfs = await resolveMountConfig({
+    backend: InMemory,
+    name: "playground",
+  });
+  attachFS(self as any, tmpfs);
+  umount("/");
+  mount("/", tmpfs);
+  return "init-fs-success";
+};
 
 const handleInitEsbuild = async () => {
   await esbuild.initialize({
     wasmURL: "https://cdn.jsdelivr.net/npm/esbuild-wasm@0.21.3/esbuild.wasm",
     worker: false,
-  })
-  return "init-esbuild-success"
-}
+  });
+  return "init-esbuild-success";
+};
 
 const handleBuild = async (entry: string) => {
   const mainRes = await esbuild.build({
@@ -43,37 +55,37 @@ const handleBuild = async (entry: string) => {
     treeShaking: true,
     define: {
       "process.env.NODE_ENV": "'production'",
-      global: 'window',
+      global: "window",
     },
     outdir: "/",
-    format: 'esm',
-    plugins: [unpkgPlugin]
-  })
+    format: "esm",
+    plugins: [unpkgPlugin],
+  });
 
   bundleList
     .splice(0, bundleList.length)
-    .forEach(bundle => URL.revokeObjectURL(bundle.url))
-  mainRes.outputFiles.forEach(generateUrl)
+    .forEach((bundle) => URL.revokeObjectURL(bundle.url));
+  mainRes.outputFiles.forEach(generateUrl);
 
-  return bundleList
-}
+  return bundleList;
+};
 
 const trigger = async (data: any) => {
   switch (data) {
     case "init-fs":
-      return handleInitFs()
+      return handleInitFs();
     case "init-esbuild":
-      return handleInitEsbuild()
+      return handleInitEsbuild();
     case "test-res":
-      return "test-res"
+      return "test-res";
     case "test-fs":
-      return promises.readFile("/test.txt", "utf-8")
+      return promises.readFile("/test.txt", "utf-8");
     case "test-rej":
-      throw new Error("test-rej")
+      throw new Error("test-rej");
     default:
       if (data.type === "build") {
-        return handleBuild(data.entry)
+        return handleBuild(data.entry);
       }
-      throw new Error("Unknown command")
+      throw new Error("Unknown command");
   }
-}
+};

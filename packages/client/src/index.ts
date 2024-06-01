@@ -1,5 +1,5 @@
-export { Client } from "./client"
-export * from "./type"
+import pathBrowser from "path-browserify";
 
-import pathBrowser from "path-browserify"
-export { pathBrowser }
+export { Client } from "./client";
+export * from "./type";
+export { pathBrowser };
