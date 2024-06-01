@@ -24,14 +24,14 @@
     "build": "vite build",
     "test": "vitest",
     "clean": "pnpm dlx npkill",
-    "lint": "eslint \"**/*.ts?(x)\" --fix",
+    "lint": "eslint",
     "format": "prettier --write '**/*.{ts,tsx,js,jsx}'",
     "format:check": "prettier --check '**/*.{ts,tsx}'"
   },
   "dependencies": {
     "@zenfs/core": "^0.12.5",
     "dequal": "2.0.3",
-    "esbuild-wasm": "^0.21.3",
+    "esbuild-wasm": "^0.21.4",
     "idb-keyval": "^6.2.1",
     "outvariant": "^1.4.2",
     "path-browserify": "^1.0.1"

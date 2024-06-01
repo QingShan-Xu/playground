@@ -1,15 +1,14 @@
 import { Client, ClientOptions, SandboxSetup, pathBrowser } from "@playground/client"
 import { DataNode } from "rc-tree/lib/interface"
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { CodeEditor } from "./components/CodeEditor"
-import { Header } from "./components/Header"
-import { Icon } from "./components/Icon"
-import { MenuTree } from "./components/MenuTree"
-import { IDPre, Preview } from "./components/Preview"
-import { PlaygroundContext } from "./context/playgroundContext"
-import "./index.css"
-import { throttle } from "./utils/throttle"
-import "./assets/font/iconfont.js"
+import { CodeEditor } from "../CodeEditor"
+import { Header } from "../Header"
+import { Icon } from "../Icon"
+import { MenuTree } from "../MenuTree"
+import { IDPre, Preview } from "../Preview"
+import { PlaygroundContext } from "../../context/playgroundContext"
+import { throttle } from "../../utils/throttle"
+import mulu from "../../assets/icon/mulu.svg"
 
 type Props = SandboxSetup & Omit<ClientOptions, "width" | "height"> & {
   loading?: ReactNode
@@ -147,7 +146,7 @@ export const PlaygroundReact = (props: Props) => {
       <Header
         left={[
           {
-            trigger: <Icon name="mulu" />,
+            trigger: <img className={`w-3.5 h-3.5`} src={mulu}></img>,
             key: 1,
             content: (
               <MenuTree

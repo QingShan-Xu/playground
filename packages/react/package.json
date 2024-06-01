@@ -10,9 +10,9 @@
   "author": "",
   "license": "ISC",
   "scripts": {
+    "build": "vite build",
     "test": "vitest --browser.provider=playwright --browser.name=chromium",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "storybook": "storybook dev -p 6006"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",

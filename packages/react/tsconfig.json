@@ -11,7 +11,9 @@
     "noImplicitAny": true,
     "jsx": "react-jsx",
     "outDir": "dist",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "module": "ES2015",
+    "moduleResolution": "Bundler"
   },
   "include": ["src"],
   "exclude": [

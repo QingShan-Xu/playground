@@ -112,3 +112,4 @@ dist
 .nx/cache
 
 *storybook.log
+.turbo

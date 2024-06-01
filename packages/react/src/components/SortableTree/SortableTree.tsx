@@ -128,6 +128,7 @@ export const SortableTree = ({ onEdit, onClickFile, ...props }: IProps) => {
       ref={treeRef}
       titleRender={genTitle}
       icon={genIcon}
+      rootClassName="__playground_rc_tree"
       switcherIcon={genSwitcherIcon}
       {...props}
     />
