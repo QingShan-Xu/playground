@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "test": "vitest --ui",
     "clean": "pnpm dlx npkill",
     "lint": "turbo lint",
     "build": "turbo build"
