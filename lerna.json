@@ -1,5 +1,5 @@
 {
-  "packages": ["playground-client", "playground-react"],
+  "packages": ["packages/*"],
   "npmClient": "pnpm",
   "command": {
     "version": {
