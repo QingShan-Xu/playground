@@ -1,7 +1,6 @@
 {
   "name": "@xqs/playground-client",
   "version": "0.0.1",
-  "private": "false",
   "description": "Client-side playground environment",
   "keywords": [
     "client",

@@ -1,7 +1,6 @@
 {
   "name": "@xqs/playground-react",
   "version": "0.0.1",
-  "private": "false",
   "description": "React components for playground environment",
   "keywords": [
     "react",
