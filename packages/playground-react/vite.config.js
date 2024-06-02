@@ -10,7 +10,6 @@ export default defineConfig({
       name: "PlaygroundReact",
     },
     rollupOptions: {
-
       treeshake: {
         preset: "smallest",
         manualPureFunctions: ["createStitches"],

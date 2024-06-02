@@ -16,14 +16,12 @@
   },
   "author": "QingShan-Xu",
   "license": "Apache-2.0",
-  "module": "./dist/client.mjs",
-  "main": "./dist/client.umd.js",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/client.mjs",
-      "require": "./dist/client.umd.js"
+      "import": "./dist/index.js"
     }
   },
   "scripts": {
@@ -35,6 +33,11 @@
     "format": "prettier --write '**/*.{ts,tsx,js,jsx}'",
     "format:check": "prettier --check '**/*.{ts,tsx}'"
   },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
   "dependencies": {
     "@zenfs/core": "^0.12.5",
     "dequal": "2.0.3",

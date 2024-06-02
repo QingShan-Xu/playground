@@ -10,6 +10,15 @@
     "typescript",
     "frontend"
   ],
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/QingShan-Xu/playground/tree/master/packages/react"
@@ -21,6 +30,11 @@
     "test": "vitest",
     "storybook": "storybook dev -p 6006"
   },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
     "@xqs/playground-client": "^0.0.1",
