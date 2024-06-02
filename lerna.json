@@ -1,6 +1,6 @@
 {
   "packages": ["playground-client", "playground-react"],
-  "npmClient": "yarn",
+  "npmClient": "pnpm",
   "command": {
     "version": {
       "createRelease": "github",
@@ -17,5 +17,5 @@
       "message": "chore: [skip ci] bump packages"
     }
   },
-  "version": "2.13.10"
+  "version": "0.0.1"
 }

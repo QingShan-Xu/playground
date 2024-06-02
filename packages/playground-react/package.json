@@ -1,8 +1,14 @@
 {
   "name": "@playground/react",
-  "version": "1.0.0",
-  "description": "",
-  "keywords": [],
+  "version": "0.0.0",
+  "description": "React components for playground environment",
+  "keywords": [
+    "react",
+    "components",
+    "playground",
+    "typescript",
+    "frontend"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/QingShan-Xu/playground/tree/master/packages/react"

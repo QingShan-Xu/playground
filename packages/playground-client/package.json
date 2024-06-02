@@ -1,8 +1,14 @@
 {
   "name": "@playground/client",
-  "version": "1.0.0",
-  "description": "",
-  "keywords": [],
+  "version": "0.0.0",
+  "description": "Client-side playground environment",
+  "keywords": [
+    "client",
+    "playground",
+    "typescript",
+    "esbuild",
+    "frontend"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/QingShan-Xu/playground/tree/master/packages/client"
