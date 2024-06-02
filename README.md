@@ -8,7 +8,7 @@ This is a core package that sits on top. It is framework agnostic and is respons
 
 ## Sandpack React
 
-React components that give you the power of editable sandboxes that run in the browser.
+React components that give you the power of editable playground that run in the browser.
 
 ```jsx
 import { Playground } from "@playground/react";
