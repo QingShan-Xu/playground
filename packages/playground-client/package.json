@@ -14,6 +14,7 @@
     "type": "git",
     "url": "git+https://github.com/QingShan-Xu/playground.git#master"
   },
+  "main": "./dist/index.js",
   "author": "QingShan-Xu",
   "license": "Apache-2.0",
   "module": "./dist/index.js",
