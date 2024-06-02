@@ -3,8 +3,8 @@ import { createStore, get, set } from "idb-keyval"
 import { invariant } from "outvariant"
 import pathBrowser, { extname } from "path-browserify"
 
-import { ReactTemplate } from "./common/template"
-import type { Dependencies, SandpackBundlerFiles, SandpackTemplate } from "./type"
+import { ReactTemplate, ReactTemplateEntry } from "./common/template"
+import type { Dependencies, PlaygroundBundlerFiles, PlaygroundTemplate } from "./type"
 
 const DEPENDENCY_ERROR_MESSAGE = `"dependencies" was not specified - provide either a package.json or a "dependencies" value`
 const ENTRY_ERROR_MESSAGE = `"entry" was not specified - provide either a package.json with the "main" field or an "entry" value`
@@ -14,7 +14,7 @@ export const bundleList: Array<{ url: string; type: "js" | "css" }> = []
 const customStore = createStore("node_modules", "playground_store")
 
 export const createError = (message: string): string =>
-  `[sandpack-client]: ${message}`
+  `[playground-client]: ${message}`
 
 export function nullthrows<T>(
   value: T | null | undefined,
@@ -25,12 +25,12 @@ export function nullthrows<T>(
 }
 
 export function addPackageJSONIfNeeded(
-  files: SandpackBundlerFiles,
+  files: PlaygroundBundlerFiles,
   name: string,
   entry?: string,
   dependencies?: Dependencies,
   devDependencies?: Dependencies,
-): SandpackBundlerFiles {
+): PlaygroundBundlerFiles {
   const normalizedFilesPath = normalizePath(files)
 
   const packageJsonFile = normalizedFilesPath["/package.json"]
@@ -118,10 +118,13 @@ export const normalizePath = <R>(path: R): R => {
 }
 
 export function getTemplate(
-  type?: SandpackTemplate,
-): SandpackBundlerFiles | undefined {
+  type?: PlaygroundTemplate,
+): { files: PlaygroundBundlerFiles, entry: string } | undefined {
   if (type === "react") {
-    return ReactTemplate
+    return {
+      files: ReactTemplate,
+      entry: ReactTemplateEntry
+    }
   }
   return undefined
 }

@@ -1,2 +1,4 @@
 import "./index.css"
-export { PlaygroundReact } from "./components/index.js"
+
+export { PlaygroundReact as Playground } from "./components"
+export * from "./type"

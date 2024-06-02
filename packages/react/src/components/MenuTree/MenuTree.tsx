@@ -1,5 +1,4 @@
-import { SortableTree } from "./SortableTree"
-import React from 'react'
+import { SortableTree } from "@/components/SortableTree"
 import { DataNode } from "rc-tree/lib/interface"
 
 type Props = {

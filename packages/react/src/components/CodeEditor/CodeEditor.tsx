@@ -5,7 +5,6 @@ import React, { useCallback, useEffect } from 'react'
 import { BundledLanguage, BundledTheme, getHighlighter } from "shiki"
 
 type ICodeEditorProps = {
-  style?: React.CSSProperties
   /**
    * @defult [ "one-dark-pro" ]
    */
@@ -29,7 +28,6 @@ export const CodeEditor: React.FC<ICodeEditorProps> = props => {
   const monaco = useMonaco()
 
   const {
-    style = { width: 240, height: 240 },
     themes = ["one-dark-pro"],
     langs = ['javascript', 'typescript', "jsx", "tsx", "vue"],
     monacoEditorOptions,
@@ -89,7 +87,7 @@ export const CodeEditor: React.FC<ICodeEditorProps> = props => {
   ])
 
   return (
-    <div style={style} className="__playground_editor border-l border-b">
+    <div className="__playgeound_editor h-full">
       <Editor
         onChange={handleChange}
         theme={themes[0]}

@@ -6,8 +6,8 @@ import { Ipc } from "./ipc"
 import { Message } from "./message"
 import type {
   ClientOptions,
-  SandboxSetup,
-  SandpackBundlerFiles
+  PlaygroundSetup,
+  PlaygroundBundlerFiles
 } from "./type"
 import {
   addPackageJSONIfNeeded,
@@ -22,36 +22,26 @@ export class Client {
   Ipc!: Ipc
   Fs!: typeof fs
 
-  sandboxSetup: SandboxSetup
+  playgroundSetup: PlaygroundSetup
   options: ClientOptions
-  iframe: HTMLIFrameElement
+  iframe!: HTMLIFrameElement
   iframeSelector: string | HTMLIFrameElement
 
   constructor(
     iframeSelector: string | HTMLIFrameElement,
-    sandboxSetup: SandboxSetup,
+    PlaygroundSetup: PlaygroundSetup,
     options: ClientOptions = {},
   ) {
-    if (isDev) {
-      const names: Array<keyof SandboxSetup> = ["name", "files", "entry"]
-      names.forEach((name) => {
-        if (!sandboxSetup[name]) {
-          throw new Error(`${name} is required`)
-        }
-      })
-    }
-
-    this.Message.set({ type: "normal", message: "init-client" })
     this.options = options
-    this.sandboxSetup = sandboxSetup
+    this.playgroundSetup = PlaygroundSetup
     this.iframeSelector = iframeSelector
-
-    this.iframe = this.initializeIframe(iframeSelector)
-    this.setLocationURLIntoIFrame()
-    this.Message.set({ type: "success", message: "init-client-success" })
   }
 
   public async init() {
+    this.Message.set({ type: "normal", message: "init-client" })
+    this.iframe = this.initializeIframe(this.iframeSelector)
+    this.setLocationURLIntoIFrame()
+    this.Message.set({ type: "success", message: "init-client-success" })
     this.Message.set({ type: "normal", message: "init-playground" })
     this.Ipc = await Ipc.getInstance()
     this.Fs = fs
@@ -64,10 +54,12 @@ export class Client {
 
   public async build() {
     this.Message.set({ type: "normal", message: "building" })
+    const startTimestamp = Date.now()
     const modules = (await this.Ipc.postMessage({
       type: "build",
-      entry: this.sandboxSetup.entry,
+      entry: this.playgroundSetup.entry,
     })) as any[]
+
     const htmlFile = this.Fs.readFileSync("/index.html", "utf-8")
     const html = generateHtml(htmlFile, modules)
     const iframeDoc =
@@ -77,7 +69,7 @@ export class Client {
       iframeDoc.write(html)
       iframeDoc.close()
     }
-    this.Message.set({ type: "success", message: "build-success" })
+    this.Message.set({ type: "success", message: `build-success: ${Date.now() - startTimestamp}ms` })
   }
 
   public setLocationURLIntoIFrame(): void {
@@ -142,45 +134,45 @@ export class Client {
   }
 
   public async updateSandbox(
-    sandboxSetup = this.sandboxSetup,
+    playgroundSetup = this.playgroundSetup,
   ): Promise<boolean> {
-    this.sandboxSetup = {
-      ...this.sandboxSetup,
-      ...sandboxSetup,
+    this.playgroundSetup = {
+      ...this.playgroundSetup,
+      ...playgroundSetup,
     }
 
     const files = this.getFiles()
     this.setFile(files)
 
-    if (sandboxSetup.template !== this.sandboxSetup.template) {
+    if (playgroundSetup.template !== this.playgroundSetup.template) {
       this.setTemplate()
     }
 
     await this.Ipc.postMessage({
       type: "build",
-      entry: this.sandboxSetup.entry,
+      entry: this.playgroundSetup.entry,
     })
 
     return true
   }
 
-  private getFiles(): SandpackBundlerFiles {
-    const { sandboxSetup } = this
+  private getFiles(): PlaygroundBundlerFiles {
+    const { playgroundSetup } = this
 
-    if (sandboxSetup.files?.["/package.json"] === undefined) {
+    if (playgroundSetup.files?.["/package.json"] === undefined) {
       return addPackageJSONIfNeeded(
-        sandboxSetup.files,
-        sandboxSetup.name,
-        sandboxSetup.entry,
-        sandboxSetup.dependencies,
-        sandboxSetup.devDependencies,
+        playgroundSetup.files ?? {},
+        playgroundSetup.name,
+        playgroundSetup.entry,
+        playgroundSetup.dependencies,
+        playgroundSetup.devDependencies,
       )
     }
 
-    return this.sandboxSetup.files
+    return this.playgroundSetup.files ?? {}
   }
 
-  private setFile(files: SandpackBundlerFiles): void {
+  private setFile(files: PlaygroundBundlerFiles): void {
     Object.entries(files).forEach(([filePath, content]) => {
       const fullPath = path.join("/", filePath)
       const dir = path.dirname(fullPath)
@@ -196,10 +188,14 @@ export class Client {
   }
 
   private setTemplate() {
-    const files = getTemplate(this.sandboxSetup.template)
-    if (!files) {
+    if (!this.playgroundSetup.template) {
       return
     }
+    const {
+      files = {},
+      entry = ""
+    } = getTemplate(this.playgroundSetup.template)!
     this.setFile(files)
+    this.playgroundSetup.entry = entry
   }
 }

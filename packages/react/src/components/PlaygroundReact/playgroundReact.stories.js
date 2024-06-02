@@ -1,4 +1,4 @@
-import { PlaygroundReact } from "../dist"
+import { PlaygroundReact } from "./PlaygroundReact"
 
 export default {
   title: 'PlaygroundReact',
@@ -8,13 +8,9 @@ export default {
   },
 }
 
-export const dist = {
+export const example = {
   args: {
     name: "example",
-    files: {},
-    entry: "/src/index.tsx",
     template: "react",
-    width: "300px",
-    height: "300px",
   },
 }

@@ -1,6 +1,7 @@
 import { defineConfig } from "vite"
 import dts from "vite-plugin-dts"
 import pkg from "./package.json"
+import path, { resolve } from "node:path"
 
 export default defineConfig({
   build: {
@@ -9,6 +10,7 @@ export default defineConfig({
       name: "PlaygroundReact",
     },
     rollupOptions: {
+
       treeshake: {
         preset: "smallest",
         manualPureFunctions: ["createStitches"],
@@ -21,14 +23,19 @@ export default defineConfig({
       ],
       output: [
         {
-          chunkFileNames: "[name]-[hash].mjs",
-          entryFileNames: "[name].mjs",
+          chunkFileNames: "[name]-[hash].js",
+          entryFileNames: "[name].js",
           format: "es",
           inlineDynamicImports: true,
           intro: 'import "./style.css";',
         },
       ],
     },
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    }
   },
   plugins: [
     dts({

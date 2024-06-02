@@ -1,12 +1,12 @@
 import Tree, { TreeNodeProps, TreeProps } from 'rc-tree'
 import { DataNode } from "rc-tree/lib/interface"
 import { Key, useCallback, useEffect, useRef } from "react"
-import arrowSvg from "../../assets/tree/arrow.svg"
-import fileSvg from "../../assets/tree/default_file.svg"
-import folderSvg from "../../assets/tree/default_folder.svg"
-import folderOpenSvg from "../../assets/tree/default_folder_opened.svg"
-import { Input } from "../../ui"
-import "./index.less"
+import arrowSvg from "@/assets/svg/tree_arrow.svg"
+import fileSvg from "@/assets/svg/tree_default_file.svg"
+import folderSvg from "@/assets/svg/tree_default_folder.svg"
+import folderOpenSvg from "@/assets/svg/tree_default_folder_opened.svg"
+import { Input } from "@/components/ui"
+import "./sortableTree.less"
 
 type IMyDataNode = DataNode
 
@@ -128,7 +128,7 @@ export const SortableTree = ({ onEdit, onClickFile, ...props }: IProps) => {
       ref={treeRef}
       titleRender={genTitle}
       icon={genIcon}
-      rootClassName="__playground_rc_tree"
+      rootClassName="_rc_tree"
       switcherIcon={genSwitcherIcon}
       {...props}
     />

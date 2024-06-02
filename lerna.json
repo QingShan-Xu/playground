@@ -1,5 +1,5 @@
 {
-  "packages": ["sandpack-client", "sandpack-react"],
+  "packages": ["playground-client", "playground-react"],
   "npmClient": "yarn",
   "command": {
     "version": {

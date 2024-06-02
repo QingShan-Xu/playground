@@ -13,7 +13,11 @@
     "outDir": "dist",
     "skipLibCheck": true,
     "module": "ES2015",
-    "moduleResolution": "Bundler"
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src"],
   "exclude": [

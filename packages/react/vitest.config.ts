@@ -2,7 +2,7 @@ import { defineProject } from "vitest/config"
 
 export default defineProject({
   test: {
-    name: "playground-client",
+    name: "playground-react",
     browser: {
       enabled: true,
       provider: "playwright",

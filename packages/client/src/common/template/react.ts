@@ -74,4 +74,6 @@ export const ReactTemplate = {
   }
   `,
   },
-};
+}
+
+export const ReactTemplateEntry = "/src/index.tsx"

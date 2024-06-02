@@ -1,69 +1,66 @@
-export interface SandboxSetup {
-  name: string;
-  files: SandpackBundlerFiles;
-  entry: string;
+export type PlaygroundSetup = {
+  name: string
+  files: PlaygroundBundlerFiles
+  entry: string
 
-  dependencies?: Dependencies;
-  devDependencies?: Dependencies;
-  /**
-   * What template we use, if not defined we infer the template from the dependencies or files.
-   *
-   */
-  template?: SandpackTemplate;
+  dependencies?: Dependencies
+  devDependencies?: Dependencies
+  template?: PlaygroundTemplate
+} | {
+  name: string
+  files?: PlaygroundBundlerFiles
+  entry?: string
+
+  dependencies?: Dependencies
+  devDependencies?: Dependencies
+  template: PlaygroundTemplate
 }
+
 
 export interface ClientOptions {
   /**
    * Paths to external resources
    */
-  externalResources?: string[];
+  externalResources?: string[]
   /**
    * Relative path that the iframe loads (eg: /about)
    */
-  startRoute?: string;
+  startRoute?: string
   /**
    * Width of iframe.
    */
-  width?: string;
+  width?: string
   /**
    * Height of iframe.
    */
-  height?: string;
+  height?: string
 }
 
-export interface SandpackBundlerFile {
-  code: string;
-  hidden?: boolean;
-  active?: boolean;
-  readOnly?: boolean;
+export interface PlaygroundBundlerFile {
+  code: string
+  hidden?: boolean
+  active?: boolean
+  readOnly?: boolean
 }
 
 export interface IIpc {
-  ipcId: number;
+  ipcId: number
 }
 
-export type SandpackBundlerFiles = Record<string, SandpackBundlerFile>;
+export type PlaygroundBundlerFiles = Record<string, PlaygroundBundlerFile>
 
-export type Dependencies = Record<string, string>;
+export type Dependencies = Record<string, string>
 
-export type SandpackTemplate = "react";
+export type PlaygroundTemplate = "react"
 
 export type ClientStatus =
   | "initializing"
   | "installing-dependencies"
   | "transpiling"
   | "idle"
-  | "done";
-
-export interface SandpackError {
-  message: string;
-  line?: number;
-  column?: number;
-  path?: string;
-  title?: string;
-}
+  | "done"
 
 export interface IMessage {
-  message: string;
-  type: "success" | "warn" | "error" | "normal";
+  message: string
+  type: "success" | "warn" | "error" | "normal"
 }
