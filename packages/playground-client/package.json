@@ -1,6 +1,7 @@
 {
-  "name": "@playground/client",
+  "name": "@xqs/playground-client",
   "version": "0.0.1",
+  "private": "false",
   "description": "Client-side playground environment",
   "keywords": [
     "client",
@@ -11,10 +12,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/QingShan-Xu/playground/tree/master/packages/client"
+    "url": "git+https://github.com/QingShan-Xu/playground.git#master"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "QingShan-Xu",
+  "license": "Apache-2.0",
   "module": "./dist/client.mjs",
   "main": "./dist/client.umd.js",
   "types": "./dist/index.d.ts",
@@ -44,5 +45,9 @@
   },
   "devDependencies": {
     "@types/path-browserify": "^1.0.2"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/QingShan-Xu/playground/issues"
+  },
+  "homepage": "https://github.com/QingShan-Xu/playground/tree/master#readme"
 }

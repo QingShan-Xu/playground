@@ -1,6 +1,7 @@
 {
-  "name": "@playground/react",
+  "name": "@xqs/playground-react",
   "version": "0.0.1",
+  "private": "false",
   "description": "React components for playground environment",
   "keywords": [
     "react",
@@ -13,8 +14,8 @@
     "type": "git",
     "url": "https://github.com/QingShan-Xu/playground/tree/master/packages/react"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "QingShan-Xu",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "vite build",
     "test": "vitest",
@@ -22,7 +23,7 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
-    "@playground/client": "workspace:*",
+    "@xqs/playground-client": "^0.0.1",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-popover": "^1.0.7",
@@ -62,5 +63,6 @@
   "peerDependencies": {
     "react": "^16.8.0 || ^17 || ^18",
     "react-dom": "^16.8.0 || ^17 || ^18"
-  }
+  },
+  "gitHead": "a3d1ada3d5f6ae38a208da3bf89e3842a8ac8b5f"
 }

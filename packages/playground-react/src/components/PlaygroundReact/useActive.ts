@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { Client, pathBrowser } from "@playground/client"
+import { Client, pathBrowser } from "@xqs/playground-client"
 
 type IActiveFile = {
   value: string,

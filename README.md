@@ -11,7 +11,7 @@ This is a core package that sits on top. It is framework agnostic and is respons
 React components that give you the power of editable playground that run in the browser.
 
 ```jsx
-import { Playground } from "@playground/react";
+import { Playground } from "@xqs/playground-react";
 
 <Playground template="react" name="your want name" />;
 ```

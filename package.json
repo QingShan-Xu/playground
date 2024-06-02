@@ -9,12 +9,12 @@
     "lint": "turbo lint",
     "build": "turbo build"
   },
-  "author": "",
+  "author": "QingShan-Xu",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/QingShan-Xu/playground/tree/master"
   },
-  "license": "ISC",
   "devDependencies": {
     "@rollup/plugin-replace": "^5.0.5",
     "@types/node": "^20.12.12",
