@@ -1,4 +1,4 @@
-import { IMessage } from "@xqs/playground-client"
+import { IMessage } from "@xu-castle-peak/playground-client"
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 
 type Props = {}

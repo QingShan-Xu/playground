@@ -1,5 +1,5 @@
 {
-  "name": "@xqs/playground-react",
+  "name": "@xu-castle-peak/playground-react",
   "version": "0.0.1",
   "description": "React components for playground environment",
   "keywords": [
@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
-    "@xqs/playground-client": "^0.0.1",
+    "@xu-castle-peak/playground-client": "^0.0.1",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-popover": "^1.0.7",
