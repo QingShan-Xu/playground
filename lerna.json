@@ -1,7 +1,5 @@
 {
-  "packages": [
-    "packages/*"
-  ],
+  "packages": ["packages/*"],
   "npmClient": "pnpm",
   "command": {
     "version": {
@@ -19,5 +17,5 @@
       "message": "chore: [skip ci] bump packages"
     }
   },
-  "version": "0.0.1"
+  "version": "0.0.0"
 }

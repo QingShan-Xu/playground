@@ -7,5 +7,5 @@ React components that give you the power of editable playground that run in the 
 ```jsx
 import { Playground } from "@xqcc/playground-react";
 
-<Playground template="react" name="your want name" />;
+<Playground template="react" name="name is unique" />;
 ```
