@@ -1,3 +1,5 @@
+<img style="width:100%" src="./example.gif" />
+
 # Playground
 
 #### Support running react code in the browser
