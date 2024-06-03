@@ -1,4 +1,4 @@
-
+<video src="./readme.example.mp4"  />
 
 # Playground
 
