@@ -1,4 +1,4 @@
-<img style="width:100%" src="./example.gif />
+<img style="width:100%" src="./example.gif" />
 
 # Playground
 
