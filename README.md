@@ -1,4 +1,4 @@
-<video src="./readme.example.mp4"  />
+<img style="width:100%" src="./example.gif />
 
 # Playground
 
