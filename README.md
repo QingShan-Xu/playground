@@ -4,11 +4,11 @@
 
 Almost all code playgrounds use server-side packaging, so I wrote a code playground that is packaged locally in the browser.
 
-<img style="width:100%" src="./example.gif" />
-
 > [!NOTE]
 > This is a testing phase, please do not use it in production environment.  
 > You are welcome to use it and submit lssues after `tag:0.1.0`
+
+<img style="width:100%" src="./example.gif" />
 
 ## Next
 
