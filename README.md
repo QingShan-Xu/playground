@@ -1,6 +1,6 @@
 # Playground
 
-#### Support running react code in the browser
+#### Support running js code in the browser
 
 Almost all code playgrounds use server-side packaging, so I wrote a code playground that is packaged locally in the browser.
 
@@ -13,7 +13,7 @@ Almost all code playgrounds use server-side packaging, so I wrote a code playgro
 ## Next
 
 - [ ] To reduce the size of the package: replace monacoEditor with shikut; disable tailwindcss
-- [ ] Implementation: Customized loading, dependency version determination, local dependency injection (currently using unpkg to obtain dependencies), css injection, open esbuild plugins
+- [ ] Implementation: Vue, Customized loading, dependency version determination, local dependency injection (currently using unpkg to obtain dependencies), css injection, open esbuild plugins
 - [ ] Test Coverage
 - [ ] Compatibility with next, cjs, etc
 

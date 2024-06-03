@@ -1,4 +1,4 @@
-Support running react code in the browser
+Support running js code in the browser
 
 ## Playground Client
 
