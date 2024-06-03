@@ -3,7 +3,7 @@ import { CodeEditor } from "@/components/CodeEditor"
 import { Header } from "@/components/Header"
 import { MenuTree } from "@/components/MenuTree/MenuTree"
 import { IDPre, Preview } from "@/components/Preview"
-import { Client, ClientOptions, PlaygroundSetup, pathBrowser } from "@xu-castle-peak/playground-client"
+import { Client, ClientOptions, PlaygroundSetup, pathBrowser } from "@xqcc/playground-client"
 import { DataNode } from "rc-tree/lib/interface"
 import React, { ReactNode, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ShowInfo, IShowInfoRef } from "@/components/ShowInfo"
