@@ -30,6 +30,9 @@
     "test": "vitest",
     "storybook": "storybook dev -p 6006"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist",
     "package.json",
