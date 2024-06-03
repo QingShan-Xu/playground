@@ -48,6 +48,10 @@ export const ReactTemplate = {
   .App {
   color: #72a24d;
   }
+
+  #root {
+    height: 100%;
+  }
   `,
   },
   "/index.html": {

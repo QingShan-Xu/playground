@@ -12,8 +12,9 @@ Almost all code playgrounds use server-side packaging, so I wrote a code playgro
 
 ## Next
 
-- [ ] To reduce the size of the package: replace monacoEditor with shikut; disable tailwindcss
+- [ ] To reduce the size of the package:disable tailwindcss
 - [ ] Implementation: Vue(currently only react), Customized loading, dependency version determination, local dependency injection (currently using unpkg to obtain dependencies), css injection, open esbuild plugins
+- [ ] Support monacoEditor (better ts type hints) and shikut (smaller files, faster speed)
 - [ ] Test Coverage
 - [ ] Compatibility with next, cjs, etc
 
