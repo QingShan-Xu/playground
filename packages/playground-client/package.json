@@ -1,6 +1,6 @@
 {
   "name": "@xqcc/playground-client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Client-side playground environment",
   "keywords": [
     "client",
