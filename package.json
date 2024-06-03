@@ -4,7 +4,7 @@
   "private": true,
   "description": "",
   "scripts": {
-    "test": "vitest --ui ",
+    "test": "vitest --ui",
     "clean": "pnpm dlx npkill",
     "lint": "turbo lint",
     "build": "turbo build",
