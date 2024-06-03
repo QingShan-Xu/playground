@@ -1,3 +1,5 @@
+<video autoplay="true" style="width:100%" type="video/mp4" src="./readme.example.mp4"  />
+
 # Playground
 
 Support running react code in the browser

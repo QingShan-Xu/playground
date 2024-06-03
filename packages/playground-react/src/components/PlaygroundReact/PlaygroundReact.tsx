@@ -159,7 +159,7 @@ export const PlaygroundReact = memo((props: IPlaygroundReact) => {
         <ResizablePanelGroup
           direction="horizontal"
           className="h-full">
-          <ResizablePanel defaultSize={60} className="w-0">
+          <ResizablePanel defaultSize={50} className="w-0">
             <CodeEditor
               themes={["github-light"]}
               value={value}
