@@ -38,6 +38,9 @@
     "package.json",
     "README.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@zenfs/core": "^0.12.5",
     "dequal": "2.0.3",
@@ -52,5 +55,6 @@
   "bugs": {
     "url": "https://github.com/QingShan-Xu/playground/issues"
   },
-  "homepage": "https://github.com/QingShan-Xu/playground/tree/master#readme"
+  "homepage": "https://github.com/QingShan-Xu/playground/tree/master#readme",
+  "gitHead": "6b6488b845993b99e194a92766cc4324797402c0"
 }

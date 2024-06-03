@@ -9,7 +9,7 @@
     "lint": "turbo lint",
     "build": "turbo build",
     "new-version": "lerna version",
-    "new-publish": "lerna publish from-package"
+    "new-publish": "lerna publish from-package --sync-workspace-lock"
   },
   "author": "QingShan-Xu",
   "license": "Apache-2.0",
