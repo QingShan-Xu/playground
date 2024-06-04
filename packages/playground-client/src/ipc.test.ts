@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, test } from "vitest"
-
 import { Ipc } from "./ipc"
 
 describe("Ipc", () => {
