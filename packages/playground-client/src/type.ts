@@ -43,10 +43,6 @@ export interface PlaygroundBundlerFile {
   readOnly?: boolean
 }
 
-export interface IIpc {
-  ipcId: number
-}
-
 export type PlaygroundBundlerFiles = Record<string, PlaygroundBundlerFile>
 
 export type Dependencies = Record<string, string>
@@ -64,3 +60,15 @@ export interface IMessage {
   message: string
   type: "success" | "warn" | "error" | "normal"
 }
+
+export type IClient2Backend =
+  | { type: "init-fs" }
+
+export type IBackend2Client =
+  | { type: "success", msg: "init-fs-successful" }
+
+export type IIpc =
+  | {
+    client2Backend: { type: "init-fs" },
+    backend2Client: { type: "success", msg: "init-fs-successful" }
+  }

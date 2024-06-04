@@ -4,6 +4,7 @@
   "private": true,
   "description": "",
   "scripts": {
+    "test:client": "vitest --ui --project playground-client",
     "test": "vitest --ui",
     "clean": "pnpm dlx npkill",
     "lint": "turbo lint",

@@ -22,19 +22,7 @@ self.addEventListener("message", async ({ data }) => {
 })
 
 const handleInitFs = async () => {
-  const rootFs = fs.mounts.get("/")
-  if (rootFs) {
-    attachFS(self as any, rootFs)
-    return "init-fs-success"
-  }
 
-  const tmpfs = await resolveMountConfig({
-    backend: InMemory,
-    name: "playground",
-  })
-  attachFS(self as any, tmpfs)
-  umount("/")
-  mount("/", tmpfs)
   return "init-fs-success"
 }
 

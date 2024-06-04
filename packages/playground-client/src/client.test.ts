@@ -40,7 +40,7 @@ describe("Client", () => {
   it('fs readFile should be back "test-fs-success"', async () => {
     const content = "test-fs-success"
     await promises.writeFile("/test.txt", content)
-    const res = await client.Ipc.postMessage("test-fs")
+    const res = await client.ipc.postMessage("test-fs")
     expect(res).toBe(content)
   })
 })

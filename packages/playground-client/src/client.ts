@@ -1,26 +1,25 @@
 import { fs } from "@zenfs/core"
 import { dequal as deepEqual } from "dequal"
 import path from "path-browserify"
-
 import { Ipc } from "./ipc"
 import { Message } from "./message"
 import type {
   ClientOptions,
-  PlaygroundSetup,
-  PlaygroundBundlerFiles
+  PlaygroundBundlerFiles,
+  PlaygroundSetup
 } from "./type"
 import {
   addPackageJSONIfNeeded,
   generateHtml,
   getTemplate,
-  isDev,
-  nullthrows,
+  nullthrows
 } from "./utils"
+import { Fs } from "./fs"
 
 export class Client {
-  Message = new Message();
-  Ipc!: Ipc
-  Fs!: typeof fs
+  message = new Message();
+  ipc!: Ipc
+  fs: Fs
 
   playgroundSetup: PlaygroundSetup
   options: ClientOptions
@@ -35,32 +34,41 @@ export class Client {
     this.options = options
     this.playgroundSetup = PlaygroundSetup
     this.iframeSelector = iframeSelector
+    this.fs = new Fs(this.playgroundSetup.name)
   }
 
   public async init() {
-    this.Message.set({ type: "normal", message: "init-client" })
+
+    // init fs
+    await this.fs.init()
+    this.message.set({ type: "normal", message: "init-fs-successful" })
+
+    // init preview
     this.iframe = this.initializeIframe(this.iframeSelector)
     this.setLocationURLIntoIFrame()
-    this.Message.set({ type: "success", message: "init-client-success" })
-    this.Message.set({ type: "normal", message: "init-playground" })
-    this.Ipc = await Ipc.getInstance()
-    this.Fs = fs
+    this.message.set({ type: "normal", message: "init-preview-successful" })
+
+    // init ipc
+    this.ipc = await Ipc.getInstance()
+
     const files = this.getFiles()
     this.setFile(files)
     this.setTemplate()
-    this.Message.set({ type: "success", message: "init-playground-success" })
+    this.message.set({ type: "success", message: "init-playground-success" })
     return true
   }
 
+
+
   public async build() {
-    this.Message.set({ type: "normal", message: "building" })
+    this.message.set({ type: "normal", message: "building" })
     const startTimestamp = Date.now()
-    const modules = (await this.Ipc.postMessage({
+    const modules = (await this.ipc.postMessage({
       type: "build",
       entry: this.playgroundSetup.entry,
     })) as any[]
 
-    const htmlFile = this.Fs.readFileSync("/index.html", "utf-8")
+    const htmlFile = this.fs.readFileSync("/index.html", "utf-8")
     const html = generateHtml(htmlFile, modules)
     const iframeDoc =
       this.iframe.contentDocument || this.iframe.contentWindow?.document
@@ -69,7 +77,7 @@ export class Client {
       iframeDoc.write(html)
       iframeDoc.close()
     }
-    this.Message.set({ type: "success", message: `build-success: ${Date.now() - startTimestamp}ms` })
+    this.message.set({ type: "success", message: `build-success: ${Date.now() - startTimestamp}ms` })
   }
 
   public setLocationURLIntoIFrame(): void {
@@ -86,7 +94,7 @@ export class Client {
   private initializeIframe(
     iframeSelector: string | HTMLIFrameElement,
   ): HTMLIFrameElement {
-    this.Message.set({ type: "normal", message: "init-preview" })
+    this.message.set({ type: "normal", message: "init-preview" })
     let iframe: HTMLIFrameElement
 
     if (typeof iframeSelector === "string") {
@@ -121,7 +129,7 @@ export class Client {
       )
     }
 
-    this.Message.set({ type: "success", message: "init-preview-success" })
+    this.message.set({ type: "success", message: "init-preview-success" })
     return iframe
   }
 
@@ -148,7 +156,7 @@ export class Client {
       this.setTemplate()
     }
 
-    await this.Ipc.postMessage({
+    await this.ipc.postMessage({
       type: "build",
       entry: this.playgroundSetup.entry,
     })
@@ -178,12 +186,12 @@ export class Client {
       const dir = path.dirname(fullPath)
 
       // 创建目录（如果不存在）
-      if (!this.Fs.existsSync(dir)) {
-        this.Fs.mkdirSync(dir, { recursive: true })
+      if (!this.fs.existsSync(dir)) {
+        this.fs.mkdirSync(dir, { recursive: true })
       }
 
       // 写入文件
-      this.Fs.writeFileSync(fullPath, content.code, "utf8")
+      this.fs.writeFileSync(fullPath, content.code, "utf8")
     })
   }
 
