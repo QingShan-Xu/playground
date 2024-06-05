@@ -1,6 +1,7 @@
 import { configure, Port } from "@zenfs/core"
 import backend from "./backend?worker&inline"
 import { nullthrows } from "./utils"
+import { IIpc } from "./type"
 
 
 export class Ipc {
@@ -53,23 +54,30 @@ export class Ipc {
     return Ipc.instance
   }
 
-  postMessage<T>(args: any, timeout = 10000): Promise<T> {
+  postMessage<
+    A extends IIpc['client2Backend'],
+    T extends A["type"],
+    R extends Extract<IIpc, { client2Backend: { type: T } }>["backend2Client"]>
+    (args: A, timeout = 20000): Promise<R> {
     this.ipcId++
     return new Promise((resolver, reject) => {
+      // 超时
       const timer = setTimeout(() => {
         this.callBackFuncs.delete(this.ipcId)
         reject(new Error("Request timed out: " + JSON.stringify(args)))
       }, timeout)
+
       this.callBackFuncs.set(this.ipcId, {
-        resolver: (result: T) => {
+        resolver: (result: unknown) => {
           clearTimeout(timer)
-          resolver(result)
+          resolver(result as R)
         },
-        reject: (error: any) => {
+        reject: (error: unknown) => {
           clearTimeout(timer)
           reject(error)
         },
       })
+
       this.worker.postMessage({ args, ipcId: this.ipcId })
     })
   }
