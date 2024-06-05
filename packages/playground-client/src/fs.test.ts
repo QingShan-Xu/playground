@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Fs } from './fs'
+import { PlaygroundSetup } from "./type"
 
 describe('Fs', () => {
   let fs: Fs
@@ -54,19 +55,20 @@ describe('Fs', () => {
   })
 
   it('should check and set files in the database', async () => {
-    const playgroundSetup = {
+    const playgroundSetup: PlaygroundSetup = {
       name: 'test-playground',
-      entry: 'index.ts',
+      buildOptions: { entry: 'index.ts' },
       files: {
-        'index.ts': { code: 'console.log("Hello, world!")' }
+        'index.ts': 'console.log("Hello, world!")'
       },
       dependencies: {},
       devDependencies: {}
     }
-
-    await fs.formatAndSetFiles(playgroundSetup)
+    const files = await fs.checkAndformatFiles(playgroundSetup)
+    fs.setFiles(files)
+    debugger
     const result = await fs.get('/index.ts')
-    expect(result).toEqual(playgroundSetup.files['index.ts'].code)
+    expect(result).toEqual(playgroundSetup.files['index.ts'])
   })
 
   it("should get two value by path in diffrefent fs", async () => {

@@ -1,31 +1,33 @@
+import { BuildOptions } from "esbuild-wasm"
+
 export type PlaygroundSetup = {
   name: string
   files: PlaygroundBundlerFiles
-  entry: string
 
   dependencies?: Dependencies
   devDependencies?: Dependencies
   template?: PlaygroundTemplate
+  buildOptions: IBuildOptions
 } | {
   name: string
   files?: PlaygroundBundlerFiles
-  entry?: string
 
   dependencies?: Dependencies
   devDependencies?: Dependencies
   template: PlaygroundTemplate
+  buildOptions: IBuildOptions
 }
 
 
 export interface ClientOptions {
-  /**
-   * Paths to external resources
-   */
-  externalResources?: string[]
-  /**
-   * Relative path that the iframe loads (eg: /about)
-   */
-  startRoute?: string
+  // /**
+  //  * Paths to external resources
+  //  */
+  // externalResources?: string[]
+  // /**
+  //  * Relative path that the iframe loads (eg: /about)
+  //  */
+  // startRoute?: string
   /**
    * Width of iframe.
    */
@@ -36,14 +38,7 @@ export interface ClientOptions {
   height?: string
 }
 
-export interface PlaygroundBundlerFile {
-  code: string
-  hidden?: boolean
-  active?: boolean
-  readOnly?: boolean
-}
-
-export type PlaygroundBundlerFiles = Record<string, PlaygroundBundlerFile>
+export type PlaygroundBundlerFiles = Record<string, string>
 
 export type Dependencies = Record<string, string>
 
@@ -61,14 +56,25 @@ export interface IMessage {
   type: "success" | "warn" | "error" | "normal"
 }
 
-export type IClient2Backend =
-  | { type: "init-fs" }
+export type IBuildOptions = {
+  entry: string
+}
 
-export type IBackend2Client =
-  | { type: "success", msg: "init-fs-successful" }
+/**
+ * 打包完成后由后端发往前端的模块列表
+ */
+export type IModules = Array<{ url: string; type: "js" | "css" }>
 
 export type IIpc =
   | {
     client2Backend: { type: "init-fs" },
     backend2Client: { type: "success", msg: "init-fs-successful" }
+  }
+  | {
+    client2Backend: { type: "build", options?: IBuildOptions },
+    backend2Client: {
+      type: "success",
+      msg: "init-build-successful",
+      module: IModules
+    }
   }

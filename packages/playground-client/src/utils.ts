@@ -31,20 +31,16 @@ export function addPackageJSONIfNeeded(
   dependencies?: Dependencies,
   devDependencies?: Dependencies,
 ): PlaygroundBundlerFiles {
-  const normalizedFilesPath = normalizePath(files)
-
-  const packageJsonFile = normalizedFilesPath["/package.json"]
+  const packageJsonFile = files["/package.json"]
 
   if (!packageJsonFile) {
-    normalizedFilesPath["/package.json"] = {
-      code: createPackageJSON(name, entry, dependencies, devDependencies),
-    }
+    files["/package.json"] = createPackageJSON(name, entry, dependencies, devDependencies)
 
-    return normalizedFilesPath
+    return files
   }
 
   if (packageJsonFile) {
-    const packageJsonContent = JSON.parse(packageJsonFile.code)
+    const packageJsonContent = JSON.parse(packageJsonFile)
 
     nullthrows(
       !(!dependencies && !packageJsonContent.dependencies),
@@ -68,12 +64,10 @@ export function addPackageJSONIfNeeded(
       packageJsonContent.main = entry
     }
 
-    normalizedFilesPath["/package.json"] = {
-      code: JSON.stringify(packageJsonContent, null, 2),
-    }
+    files["/package.json"] = JSON.stringify(packageJsonContent, null, 2)
   }
 
-  return normalizedFilesPath
+  return files
 }
 
 export function createPackageJSON(
@@ -95,18 +89,23 @@ export function createPackageJSON(
 }
 
 export const normalizePath = <R>(path: R): R => {
+
+  const nromal = (path: string) => {
+    return pathBrowser.join("/", path)
+  }
+
   if (typeof path === "string") {
-    return pathBrowser.normalize(path) as R
+    return nromal(path) as R
   }
 
   if (Array.isArray(path)) {
-    return path.map(pathBrowser.normalize) as R
+    return path.map(nromal) as R
   }
 
   if (typeof path === "object" && path !== null) {
     return Object.entries(path as any).reduce<any>(
       (all, [key, content]: [string, string | any]) => {
-        const fileName = pathBrowser.normalize(key)
+        const fileName = nromal(key)
         all[fileName] = content
         return all
       },
@@ -194,3 +193,12 @@ export const generateHtml = (
 }
 
 export const isDev = "development"
+
+
+export const isWorkerContext = () => {
+  try {
+    return typeof window === 'undefined'
+  } catch (e) {
+    return true
+  }
+}

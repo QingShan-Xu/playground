@@ -1,7 +1,8 @@
 import { IDBPDatabase, deleteDB, openDB } from "idb"
 import path from "path-browserify"
-import { PlaygroundSetup } from "./type"
-import { addPackageJSONIfNeeded } from "./utils"
+import { PlaygroundBundlerFiles, PlaygroundSetup } from "./type"
+import { addPackageJSONIfNeeded, getTemplate, isWorkerContext, normalizePath } from "./utils"
+import { l } from "vite/dist/node/types.d-aGj9QkWt"
 
 export class Fs {
   private dbName: string
@@ -27,6 +28,7 @@ export class Fs {
     await this.db.clear(this.storeName)
     await this.db.close()
     await deleteDB(this.dbName)
+    debugger
   }
   async get(path: string) {
     if (!this.db) {
@@ -38,6 +40,7 @@ export class Fs {
     if (!this.db) {
       return
     }
+    debugger
     return this.db.put(this.storeName, value, path)
   }
   async del(path: string) {
@@ -59,26 +62,51 @@ export class Fs {
     return this.db.getAllKeys(this.storeName)
   }
 
-  async formatAndSetFiles(playgroundSetup: PlaygroundSetup) {
+  async getFiles() {
+    if (!this.db) {
+      return
+    }
 
-    const files = addPackageJSONIfNeeded(
-      playgroundSetup.files ?? {},
+    const keys = await this.db.getAllKeys(this.storeName) as string[]
+
+    let files: PlaygroundBundlerFiles = {}
+
+    await Promise
+      .all(keys
+        .map(async key => {
+          files[key] = await this.get(key)
+        })
+      )
+
+    return files
+  }
+
+  async checkAndformatFiles(playgroundSetup: PlaygroundSetup) {
+    const currentFiles = await this.getFiles()
+
+    return addPackageJSONIfNeeded(
+      { ...currentFiles, ...normalizePath(playgroundSetup.files) },
       playgroundSetup.name,
-      playgroundSetup.entry,
+      playgroundSetup.buildOptions.entry,
       playgroundSetup.dependencies,
       playgroundSetup.devDependencies,
     )
+  }
+
+  async setFiles(files: PlaygroundBundlerFiles) {
     await Promise
       .all(
         Object
           .entries(files)
-          .map(async ([filePath, content]) => {
+          .map(async ([filePath, code]) => {
             const fullPath = path.join("/", filePath)
             const isHas = await this.get(fullPath)
             if (!isHas) {
-              await this.set(fullPath, content.code)
+              await this.set(fullPath, code)
             }
           })
       )
   }
+
+
 }
