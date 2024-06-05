@@ -2,7 +2,6 @@ import { IDBPDatabase, deleteDB, openDB } from "idb"
 import path from "path-browserify"
 import { PlaygroundBundlerFiles, PlaygroundSetup } from "./type"
 import { addPackageJSONIfNeeded, getTemplate, isWorkerContext, normalizePath } from "./utils"
-import { l } from "vite/dist/node/types.d-aGj9QkWt"
 
 export class Fs {
   private dbName: string
