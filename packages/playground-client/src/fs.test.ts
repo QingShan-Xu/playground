@@ -6,12 +6,11 @@ describe('Fs', () => {
   let fs: Fs
 
   beforeEach(async () => {
-    fs = new Fs('test_fs')
-    await fs.init()
-  })
+    fs = await Fs.getInstance("test_fs")
 
-  afterEach(async () => {
-    await fs.destroy()
+    return async () => {
+      await fs.destroy()
+    }
   })
 
   it('should set a value', async () => {
@@ -51,6 +50,7 @@ describe('Fs', () => {
     await fs.set('/test1.txt', 'Hello, World!')
     await fs.set('/test2.txt', 'Goodbye, World!')
     const result = await fs.paths()
+
     expect(result).toEqual(['/test1.txt', '/test2.txt'])
   })
 
@@ -65,15 +65,13 @@ describe('Fs', () => {
       devDependencies: {}
     }
     const files = await fs.checkAndformatFiles(playgroundSetup)
-    fs.setFiles(files)
-    debugger
+    await fs.setFiles(files)
     const result = await fs.get('/index.ts')
     expect(result).toEqual(playgroundSetup.files['index.ts'])
   })
 
   it("should get two value by path in diffrefent fs", async () => {
-    const fs2 = new Fs('test_fs2')
-    await fs2.init()
+    const fs2 = await Fs.getInstance('test_fs2')
     fs.set('/test1.txt', 'Hello, World!')
     fs2.set('/test2.txt', 'Goodbye, World!')
     const result = await fs.get('/test1.txt')
@@ -82,5 +80,18 @@ describe('Fs', () => {
     expect(result2).toEqual('Goodbye, World!')
   })
 
+  it("should get two value by path in diffrefent fs2", async () => {
+    const fs2 = await Fs.getInstance('test_fs2')
+    fs.set('/test1.txt', 'Hello, World!')
+    fs2.set('/test2.txt', 'Goodbye, World!')
+    const result = await fs.get('/test1.txt')
+    const result2 = await fs2.get('/test2.txt')
 
+    debugger
+    const path1 = await fs.paths()
+    debugger
+    const path2 = await fs2.paths()
+    expect(result).toEqual('Hello, World!')
+    expect(result2).toEqual('Goodbye, World!')
+  })
 }) 

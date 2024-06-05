@@ -1,72 +1,91 @@
 import { IDBPDatabase, deleteDB, openDB } from "idb"
-import path from "path-browserify"
+import pathBrowser from "path-browserify"
 import { PlaygroundBundlerFiles, PlaygroundSetup } from "./type"
 import { addPackageJSONIfNeeded, getTemplate, isWorkerContext, normalizePath } from "./utils"
 
 export class Fs {
-  private dbName: string
-  private storeName: string
+  private static instance: Fs
   private db!: IDBPDatabase
 
-  constructor(name: string) {
-    this.dbName = `__playground_db_${name}`
-    this.storeName = `__playground_store_${name}`
+  private dbName: string = "__playground_db"
+  private storeName: string = "__playground_store"
+  private rootDirName!: string
+
+  private constructor() {
   }
-  async init() {
+
+  private genPath(path: string) {
+    return pathBrowser.join("/", this.rootDirName, path)
+  }
+
+  private async init() {
     const storeName = this.storeName
-    this.db = await openDB(this.dbName, undefined, {
+    const db = await openDB(this.dbName, undefined, {
       upgrade(db) {
+        db.createObjectStore("/node_modules")
         db.createObjectStore(storeName)
       },
     })
+    return db
   }
+
+  static async getInstance(name: string) {
+    if (!Fs.instance) {
+      const fs = new Fs()
+      fs.rootDirName = pathBrowser.join("/", name)
+      fs.db = await fs.init()
+      Fs.instance = fs
+    }
+    return Fs.instance
+  }
+
   async destroy() {
     if (!this.db) {
       return
     }
-    await this.db.clear(this.storeName)
-    await this.db.close()
-    await deleteDB(this.dbName)
-    debugger
+    return this.clear()
   }
   async get(path: string) {
     if (!this.db) {
       return
     }
-    return this.db.get(this.storeName, path)
+    return this.db.get(this.storeName, this.genPath(path))
   }
   async set(path: string, value: string) {
     if (!this.db) {
       return
     }
-    debugger
-    return this.db.put(this.storeName, value, path)
+    return this.db.put(this.storeName, value, this.genPath(path))
   }
   async del(path: string) {
     if (!this.db) {
       return
     }
-    return this.db.delete(this.storeName, path)
+    return this.db.delete(this.storeName, this.genPath(path))
   }
   async clear() {
     if (!this.db) {
       return
     }
-    return this.db.clear(this.storeName)
+    return this.db.delete(this.storeName, IDBKeyRange.bound(`${this.rootDirName}/`, `${this.rootDirName}/\uffff`, false, false))
   }
   async paths() {
     if (!this.db) {
       return
     }
-    return this.db.getAllKeys(this.storeName)
-  }
 
+    const lower = `${this.rootDirName}/`
+    const upper = `${this.rootDirName}/\uffff`
+    const keys = await this.db.getAllKeys(this.storeName, IDBKeyRange.bound(lower, upper, false, false))
+
+    return keys.map(key => String(key).replace(this.rootDirName, ""))
+  }
   async getFiles() {
     if (!this.db) {
       return
     }
 
-    const keys = await this.db.getAllKeys(this.storeName) as string[]
+    const keys = await this.paths() as string[]
 
     let files: PlaygroundBundlerFiles = {}
 
@@ -79,7 +98,6 @@ export class Fs {
 
     return files
   }
-
   async checkAndformatFiles(playgroundSetup: PlaygroundSetup) {
     const currentFiles = await this.getFiles()
 
@@ -91,21 +109,17 @@ export class Fs {
       playgroundSetup.devDependencies,
     )
   }
-
   async setFiles(files: PlaygroundBundlerFiles) {
     await Promise
       .all(
         Object
           .entries(files)
           .map(async ([filePath, code]) => {
-            const fullPath = path.join("/", filePath)
-            const isHas = await this.get(fullPath)
+            const isHas = await this.get(filePath)
             if (!isHas) {
-              await this.set(fullPath, code)
+              await this.set(filePath, code)
             }
           })
       )
   }
-
-
 }
