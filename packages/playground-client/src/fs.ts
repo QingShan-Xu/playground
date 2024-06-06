@@ -1,7 +1,7 @@
-import { IDBPDatabase, deleteDB, openDB } from "idb"
+import { IDBPDatabase, openDB } from "idb"
 import pathBrowser from "path-browserify"
 import { PlaygroundBundlerFiles, PlaygroundSetup } from "./type"
-import { addPackageJSONIfNeeded, getTemplate, isWorkerContext, normalizePath } from "./utils"
+import { addPackageJSONIfNeeded, normalizePath } from "./utils"
 
 export class Fs {
   private static instance: Fs
@@ -9,13 +9,11 @@ export class Fs {
 
   private dbName: string = "__playground_db"
   private storeName: string = "__playground_store"
-  private rootDirName!: string
-
   private constructor() {
   }
 
-  private genPath(path: string) {
-    return pathBrowser.join("/", this.rootDirName, path)
+  private genPath(path: string, rootDirName: string) {
+    return pathBrowser.join("/", rootDirName, path)
   }
 
   private async init() {
@@ -29,77 +27,67 @@ export class Fs {
     return db
   }
 
-  static async getInstance(name: string) {
+  static async getInstance() {
     if (!Fs.instance) {
       const fs = new Fs()
-      fs.rootDirName = pathBrowser.join("/", name)
       fs.db = await fs.init()
       Fs.instance = fs
     }
     return Fs.instance
   }
 
-  async destroy() {
+  async get(name: string, path: string,) {
     if (!this.db) {
       return
     }
-    return this.clear()
+    return this.db.get(this.storeName, this.genPath(path, name))
   }
-  async get(path: string) {
+  async set(name: string, path: string, value: string) {
     if (!this.db) {
       return
     }
-    return this.db.get(this.storeName, this.genPath(path))
+    return this.db.put(this.storeName, value, this.genPath(path, name))
   }
-  async set(path: string, value: string) {
+  async del(name: string, path: string) {
     if (!this.db) {
       return
     }
-    return this.db.put(this.storeName, value, this.genPath(path))
+    return this.db.delete(this.storeName, this.genPath(path, name))
   }
-  async del(path: string) {
+  async clear(name: string) {
     if (!this.db) {
       return
     }
-    return this.db.delete(this.storeName, this.genPath(path))
+    return this.db.delete(this.storeName, IDBKeyRange.bound(`${name}/`, `${name}/\uffff`, false, false))
   }
-  async clear() {
-    if (!this.db) {
-      return
-    }
-    return this.db.delete(this.storeName, IDBKeyRange.bound(`${this.rootDirName}/`, `${this.rootDirName}/\uffff`, false, false))
-  }
-  async paths() {
+  async paths(name: string) {
     if (!this.db) {
       return
     }
 
-    const lower = `${this.rootDirName}/`
-    const upper = `${this.rootDirName}/\uffff`
-    const keys = await this.db.getAllKeys(this.storeName, IDBKeyRange.bound(lower, upper, false, false))
-
-    return keys.map(key => String(key).replace(this.rootDirName, ""))
+    const keys = await this.db.getAllKeys(this.storeName, IDBKeyRange.bound(`${name}/`, `${name}/\uffff`, false, false))
+    return keys.map(key => String(key).replace(name, ""))
   }
-  async getFiles() {
+  async getFiles(name: string) {
     if (!this.db) {
       return
     }
 
-    const keys = await this.paths() as string[]
+    const keys = await this.paths(name) as string[]
 
     let files: PlaygroundBundlerFiles = {}
 
     await Promise
       .all(keys
         .map(async key => {
-          files[key] = await this.get(key)
+          files[key] = await this.get(name, key)
         })
       )
 
     return files
   }
   async checkAndformatFiles(playgroundSetup: PlaygroundSetup) {
-    const currentFiles = await this.getFiles()
+    const currentFiles = await this.getFiles(playgroundSetup.buildOptions.entry)
 
     return addPackageJSONIfNeeded(
       { ...currentFiles, ...normalizePath(playgroundSetup.files) },
@@ -109,15 +97,15 @@ export class Fs {
       playgroundSetup.devDependencies,
     )
   }
-  async setFiles(files: PlaygroundBundlerFiles) {
+  async setFiles(name: string, files: PlaygroundBundlerFiles) {
     await Promise
       .all(
         Object
           .entries(files)
           .map(async ([filePath, code]) => {
-            const isHas = await this.get(filePath)
+            const isHas = await this.get(name, filePath)
             if (!isHas) {
-              await this.set(filePath, code)
+              await this.set(name, filePath, code)
             }
           })
       )

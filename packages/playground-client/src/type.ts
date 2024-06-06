@@ -1,4 +1,3 @@
-import { BuildOptions } from "esbuild-wasm"
 
 export type PlaygroundSetup = {
   name: string

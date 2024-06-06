@@ -44,10 +44,8 @@
   "dependencies": {
     "@zenfs/core": "^0.12.5",
     "dequal": "2.0.3",
-    "dexie": "^4.0.7",
     "esbuild-wasm": "^0.21.4",
     "idb": "^8.0.0",
-    "idb-keyval": "^6.2.1",
     "outvariant": "^1.4.2",
     "path-browserify": "^1.0.1"
   },

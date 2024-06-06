@@ -1,6 +1,5 @@
 import { promises } from "@zenfs/core"
 import { beforeEach, describe, expect, it } from "vitest"
-
 import { Client } from "./client"
 import type { ClientOptions, PlaygroundSetup } from "./type"
 

@@ -1,7 +1,6 @@
-import { configure, Port } from "@zenfs/core"
 import backend from "./backend?worker&inline"
-import { nullthrows } from "./utils"
 import { IIpc } from "./type"
+import { nullthrows } from "./utils"
 
 
 export class Ipc {

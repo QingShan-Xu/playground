@@ -1,17 +1,15 @@
 import type { OutputFile } from "esbuild-wasm"
-import { createStore, get, set } from "idb-keyval"
 import { invariant } from "outvariant"
 import pathBrowser, { extname } from "path-browserify"
 
 import { ReactTemplate, ReactTemplateEntry } from "./common/template"
 import type { Dependencies, PlaygroundBundlerFiles, PlaygroundTemplate } from "./type"
 
-const DEPENDENCY_ERROR_MESSAGE = `"dependencies" was not specified - provide either a package.json or a "dependencies" value`
 const ENTRY_ERROR_MESSAGE = `"entry" was not specified - provide either a package.json with the "main" field or an "entry" value`
 
 export const bundleList: Array<{ url: string; type: "js" | "css" }> = []
 
-const customStore = createStore("node_modules", "playground_store")
+// const customStore = createStore("node_modules", "playground_store")
 
 export const createError = (message: string): string =>
   `[playground-client]: ${message}`

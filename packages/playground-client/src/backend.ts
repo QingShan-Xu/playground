@@ -1,11 +1,5 @@
 import {
-  resolveMountConfig,
-  InMemory,
-  attachFS,
-  fs,
-  promises,
-  umount,
-  mount,
+  promises
 } from "@zenfs/core"
 import esbuild from "esbuild-wasm"
 
