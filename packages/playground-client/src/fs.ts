@@ -12,8 +12,8 @@ export class Fs {
   private constructor() {
   }
 
-  private genPath(path: string, rootDirName: string) {
-    return pathBrowser.join("/", rootDirName, path)
+  private genPath(rootDirName: string, path?: string,) {
+    return pathBrowser.join("/", rootDirName, path ?? "")
   }
 
   private async init() {
@@ -40,33 +40,35 @@ export class Fs {
     if (!this.db) {
       return
     }
-    return this.db.get(this.storeName, this.genPath(path, name))
+    return this.db.get(this.storeName, this.genPath(name, path))
   }
   async set(name: string, path: string, value: string) {
     if (!this.db) {
       return
     }
-    return this.db.put(this.storeName, value, this.genPath(path, name))
+    return this.db.put(this.storeName, value, this.genPath(name, path))
   }
   async del(name: string, path: string) {
     if (!this.db) {
       return
     }
-    return this.db.delete(this.storeName, this.genPath(path, name))
+    return this.db.delete(this.storeName, this.genPath(name, path))
   }
   async clear(name: string) {
     if (!this.db) {
       return
     }
-    return this.db.delete(this.storeName, IDBKeyRange.bound(`${name}/`, `${name}/\uffff`, false, false))
+    const currentName = normalizePath(name)
+    return this.db.delete(this.storeName, IDBKeyRange.bound(`${currentName}/`, `${currentName}/\uffff`, false, false))
   }
   async paths(name: string) {
     if (!this.db) {
       return
     }
 
-    const keys = await this.db.getAllKeys(this.storeName, IDBKeyRange.bound(`${name}/`, `${name}/\uffff`, false, false))
-    return keys.map(key => String(key).replace(name, ""))
+    const currentName = normalizePath(name)
+    const keys = await this.db.getAllKeys(this.storeName, IDBKeyRange.bound(`${currentName}/`, `${currentName}/\uffff`, false, false))
+    return keys.map(key => String(key).replace(`${currentName}`, ""))
   }
   async getFiles(name: string) {
     if (!this.db) {
