@@ -80,17 +80,4 @@ describe('Fs', () => {
     expect(result).toEqual('Hello, World!')
     expect(result2).toEqual('Goodbye, World!')
   })
-
-  it("should get two value by path in diffrefent fs2", async () => {
-    const fs2 = await Fs.getInstance()
-    fs.set(FSname, '/test1.txt', 'Hello, World!')
-    fs2.set(FSname, '/test2.txt', 'Goodbye, World!')
-    const result = await fs.get(FSname, '/test1.txt')
-    const result2 = await fs2.get(FSname, '/test2.txt')
-
-    const path1 = await fs.paths(FSname)
-    const path2 = await fs2.paths(FSname)
-    expect(result).toEqual('Hello, World!')
-    expect(result2).toEqual('Goodbye, World!')
-  })
 }) 
