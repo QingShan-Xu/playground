@@ -28,25 +28,15 @@ export class Ipc {
       this.callBackFuncs.delete(ipcId)
     })
   }
-
-  // private async initFs(): Promise<"init-fs-success"> {
-  //   if (Ipc.instance) return "init-fs-success"
-  //   const res = await this.postMessage("init-fs")
-  //   nullthrows(res === "init-fs-success", "init-fs-error")
-  //   return "init-fs-success"
-  // }
-
-  private async initEsbuild(): Promise<"init-esbuild-success"> {
-    if (Ipc.instance) return "init-esbuild-success"
-    const res = await this.postMessage("init-esbuild")
-    nullthrows(res === "init-esbuild-success", "init-esbuild-error")
-    return res as "init-esbuild-success"
+  private async initEsbuild() {
+    if (Ipc.instance) return
+    const res = await this.postMessage({ type: "init-esbuild" })
+    nullthrows(res.msg === "init-esbuild-successful", "init-esbuild-error")
   }
 
   public static async getInstance(): Promise<Ipc> {
     if (!Ipc.instance) {
       const ipc = new Ipc()
-      // await ipc.initFs()
       await ipc.initEsbuild()
       Ipc.instance = ipc
     }

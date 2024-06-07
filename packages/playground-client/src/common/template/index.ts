@@ -1,1 +1,1 @@
-export { ReactTemplate, ReactTemplateEntry } from "./react"
+export * from "./react"

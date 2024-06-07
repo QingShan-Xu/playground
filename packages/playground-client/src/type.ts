@@ -2,19 +2,11 @@
 export type PlaygroundSetup = {
   name: string
   files: PlaygroundBundlerFiles
+  buildOptions: IBuildOptions
 
   dependencies?: Dependencies
   devDependencies?: Dependencies
-  template?: PlaygroundTemplate
-  buildOptions: IBuildOptions
-} | {
-  name: string
-  files?: PlaygroundBundlerFiles
-
-  dependencies?: Dependencies
-  devDependencies?: Dependencies
-  template: PlaygroundTemplate
-  buildOptions: IBuildOptions
+  defaultTemplate?: PlaygroundTemplate
 }
 
 
@@ -66,14 +58,23 @@ export type IModules = Array<{ url: string; type: "js" | "css" }>
 
 export type IIpc =
   | {
-    client2Backend: { type: "init-fs" },
-    backend2Client: { type: "success", msg: "init-fs-successful" }
-  }
-  | {
-    client2Backend: { type: "build", options?: IBuildOptions },
+    client2Backend: {
+      type: "build",
+      options: IBuildOptions,
+      files: PlaygroundBundlerFiles
+    },
     backend2Client: {
       type: "success",
       msg: "init-build-successful",
       module: IModules
+    }
+  }
+  | {
+    client2Backend: {
+      type: "init-esbuild",
+    },
+    backend2Client: {
+      type: "success",
+      msg: "init-esbuild-successful",
     }
   }

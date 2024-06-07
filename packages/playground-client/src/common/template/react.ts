@@ -1,7 +1,7 @@
+import { Dependencies, PlaygroundSetup } from "../../type"
+
 export const ReactTemplate = {
-  "/src/App.tsx": {
-    code: `
-    import React from 'react';
+  "/src/App.tsx": `import React from 'react';
     export default function App() {
       return (
         <div className='App'>
@@ -12,9 +12,7 @@ export const ReactTemplate = {
     // Log to console
     console.log('Hello console')
     `,
-  },
-  "/src/index.tsx": {
-    code: `
+  "/src/index.tsx": `
   import React, { StrictMode } from "react";
   import * as ReactDOMClient from "react-dom/client";
   import "./style.css"
@@ -28,12 +26,8 @@ export const ReactTemplate = {
   <StrictMode>
     <App />
   </StrictMode>
-  );
-  `,
-  },
-  "/src/style.css": {
-    code: `
-  body {
+  );`,
+  "/src/style.css": `body {
   overflow: auto;
   background: transparent; /* Make it white if you need */
   padding: 0 24px;
@@ -53,10 +47,7 @@ export const ReactTemplate = {
     height: 100%;
   }
   `,
-  },
-  "/index.html": {
-    code: `
-  <!DOCTYPE html>
+  "/index.html": `<!DOCTYPE html>
   <html lang="en">
     <head>
       <meta charset="UTF-8">
@@ -67,17 +58,17 @@ export const ReactTemplate = {
     </body>
   </html>
   `,
-  },
-  "/package.json": {
-    code: `
+  "/package.json": `
   {
   "dependencies": {
     "react": "18.0.0",
     "react-dom": "18.0.0"
   }
-  }
-  `,
-  },
+  }`,
 }
 
 export const ReactTemplateEntry = "/src/index.tsx"
+export const ReactTemplateDependencies: Dependencies = {
+  "react": "18.0.0",
+  "react-dom": "18.0.0"
+}

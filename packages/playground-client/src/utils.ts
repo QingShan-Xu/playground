@@ -1,15 +1,13 @@
 import type { OutputFile } from "esbuild-wasm"
 import { invariant } from "outvariant"
 import pathBrowser, { extname } from "path-browserify"
-
-import { ReactTemplate, ReactTemplateEntry } from "./common/template"
-import type { Dependencies, PlaygroundBundlerFiles, PlaygroundTemplate } from "./type"
-
-const ENTRY_ERROR_MESSAGE = `"entry" was not specified - provide either a package.json with the "main" field or an "entry" value`
+import { createStore, get, set } from "idb-keyval"
+import { ReactTemplate, ReactTemplateDependencies, ReactTemplateEntry } from "./common/template"
+import type { Dependencies, PlaygroundBundlerFiles, PlaygroundSetup, PlaygroundTemplate } from "./type"
 
 export const bundleList: Array<{ url: string; type: "js" | "css" }> = []
 
-// const customStore = createStore("node_modules", "playground_store")
+const customStore = createStore("__node_modules", "playground_store")
 
 export const createError = (message: string): string =>
   `[playground-client]: ${message}`
@@ -23,49 +21,46 @@ export function nullthrows<T>(
 }
 
 export function addPackageJSONIfNeeded(
-  files: PlaygroundBundlerFiles,
-  name: string,
-  entry?: string,
-  dependencies?: Dependencies,
-  devDependencies?: Dependencies,
+  playgroundSetup: PlaygroundSetup
 ): PlaygroundBundlerFiles {
-  const packageJsonFile = files["/package.json"]
+  const packageJsonFile = playgroundSetup.files["/package.json"]
 
   if (!packageJsonFile) {
-    files["/package.json"] = createPackageJSON(name, entry, dependencies, devDependencies)
+    playgroundSetup.files["/package.json"] = createPackageJSON(
+      playgroundSetup.name,
+      playgroundSetup.buildOptions.entry,
+      playgroundSetup.dependencies,
+      playgroundSetup.devDependencies
+    )
 
-    return files
+    return playgroundSetup.files
   }
 
   if (packageJsonFile) {
     const packageJsonContent = JSON.parse(packageJsonFile)
 
-    nullthrows(
-      !(!dependencies && !packageJsonContent.dependencies),
-      ENTRY_ERROR_MESSAGE,
-    )
-
-    if (dependencies) {
+    if (playgroundSetup.dependencies) {
       packageJsonContent.dependencies = {
         ...(packageJsonContent.dependencies ?? {}),
-        ...(dependencies ?? {}),
+        ...playgroundSetup.dependencies,
       }
     }
 
-    if (devDependencies) {
+    if (playgroundSetup.devDependencies) {
       packageJsonContent.devDependencies = {
         ...(packageJsonContent.devDependencies ?? {}),
+        ...playgroundSetup.devDependencies,
       }
     }
 
-    if (entry) {
-      packageJsonContent.main = entry
+    if (playgroundSetup.buildOptions.entry) {
+      packageJsonContent.main = playgroundSetup.buildOptions.entry
     }
 
-    files["/package.json"] = JSON.stringify(packageJsonContent, null, 2)
+    playgroundSetup.files["/package.json"] = JSON.stringify(packageJsonContent, null, 2)
   }
 
-  return files
+  return normalizePath(playgroundSetup.files)
 }
 
 export function createPackageJSON(
@@ -116,11 +111,16 @@ export const normalizePath = <R>(path: R): R => {
 
 export function getTemplate(
   type?: PlaygroundTemplate,
-): { files: PlaygroundBundlerFiles, entry: string } | undefined {
+): {
+  files: PlaygroundBundlerFiles,
+  entry: string,
+  dependices: Dependencies
+} | undefined {
   if (type === "react") {
     return {
       files: ReactTemplate,
-      entry: ReactTemplateEntry
+      entry: ReactTemplateEntry,
+      dependices: ReactTemplateDependencies
     }
   }
   return undefined

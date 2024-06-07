@@ -7,6 +7,7 @@ export default defineProject({
       enabled: true,
       provider: "playwright",
       name: "chromium",
+      // name: 'chrome', // browser name is required
     },
   },
 })

@@ -1,10 +1,13 @@
-import {
-  promises
-} from "@zenfs/core"
-import esbuild from "esbuild-wasm"
 
 import { unpkgPlugin } from "./unpkgPlugin"
 import { bundleList, generateUrl } from "./utils"
+import { IIpc } from "./type"
+import _esbuild from "esbuild-wasm"
+
+declare global {
+  // eslint-disable-next-line no-var 
+  var esbuild: typeof _esbuild
+}
 
 self.addEventListener("message", async ({ data }) => {
   try {
@@ -15,12 +18,8 @@ self.addEventListener("message", async ({ data }) => {
   }
 })
 
-const handleInitFs = async () => {
-
-  return "init-fs-success"
-}
-
 const handleInitEsbuild = async () => {
+  importScripts("https://cdn.jsdelivr.net/npm/esbuild-wasm@0.21.4/lib/browser.min.js")
   await esbuild.initialize({
     wasmURL: "https://cdn.jsdelivr.net/npm/esbuild-wasm@0.21.4/esbuild.wasm",
     worker: false,
@@ -28,11 +27,12 @@ const handleInitEsbuild = async () => {
   return "init-esbuild-success"
 }
 
-const handleBuild = async (entry: string) => {
+const handleBuild = async (
+  data: Extract<IIpc["client2Backend"], { type: "build" }>
+) => {
   const mainRes = await esbuild.build({
     bundle: true,
     write: false,
-    entryPoints: [entry],
     resolveExtensions: [".tsx", ".ts", ".jsx", ".js", ".css", ".json"],
     treeShaking: true,
     define: {
@@ -41,7 +41,8 @@ const handleBuild = async (entry: string) => {
     },
     outdir: "/",
     format: "esm",
-    plugins: [unpkgPlugin],
+    plugins: [unpkgPlugin(data.files)],
+    entryPoints: [data.options.entry],
   })
 
   bundleList
@@ -52,21 +53,13 @@ const handleBuild = async (entry: string) => {
   return bundleList
 }
 
-const trigger = async (data: any) => {
-  switch (data) {
-    case "init-fs":
-      return handleInitFs()
+const trigger = async (data: IIpc["client2Backend"]) => {
+  switch (data.type) {
     case "init-esbuild":
       return handleInitEsbuild()
-    case "test-res":
-      return "test-res"
-    case "test-fs":
-      return promises.readFile("/test.txt", "utf-8")
-    case "test-rej":
-      throw new Error("test-rej")
     default:
       if (data.type === "build") {
-        return handleBuild(data.entry)
+        return handleBuild(data)
       }
       throw new Error("Unknown command")
   }

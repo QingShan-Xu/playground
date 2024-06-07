@@ -14,7 +14,6 @@ export class Preview {
     iframeSelector: string | HTMLIFrameElement,
     clientOptions: ClientOptions
   ): HTMLIFrameElement {
-    // this.message.set({ type: "normal", message: "init-preview" })
     let iframe: HTMLIFrameElement
 
     if (typeof iframeSelector === "string") {
@@ -48,8 +47,6 @@ export class Preview {
         "accelerometer; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; clipboard-write;",
       )
     }
-
-    // this.message.set({ type: "success", message: "init-preview-success" })
     return iframe
   }
 
@@ -65,5 +62,10 @@ export class Preview {
       iframeDoc.write(html)
       iframeDoc.close()
     }
+  }
+
+  update(buildOptions: ClientOptions) {
+    this.iframe.style.width = buildOptions.width ?? this.iframe.style.width
+    this.iframe.style.height = buildOptions.height ?? this.iframe.style.height
   }
 }

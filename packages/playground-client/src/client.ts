@@ -1,14 +1,13 @@
 import { dequal as deepEqual } from "dequal"
-import { Fs } from "./fs"
 import { Ipc } from "./ipc"
 import { Message } from "./message"
 import { Preview } from "./preview"
 import type {
   ClientOptions,
-  IBuildOptions,
   PlaygroundSetup
 } from "./type"
 import {
+  addPackageJSONIfNeeded,
   generateHtml,
   getTemplate
 } from "./utils"
@@ -19,39 +18,20 @@ export class Client {
 
   message = new Message();
   ipc!: Ipc
-  fs: Fs
   preview: Preview
 
   constructor(
     iframeSelector: string | HTMLIFrameElement,
-    PlaygroundSetup: PlaygroundSetup,
+    playgroundSetup: PlaygroundSetup,
     options: ClientOptions = {},
   ) {
     this.options = options
-    this.playgroundSetup = PlaygroundSetup
-
-    this.fs = new Fs(this.playgroundSetup.name)
+    this.playgroundSetup = playgroundSetup
     this.preview = new Preview(iframeSelector, options)
+    this.updateTemplate()
   }
 
   public async init() {
-
-    // init fs
-    const template = this.getTemplate()
-    if (template) {
-      this.playgroundSetup.buildOptions.entry = template.entry
-    }
-
-    await this.fs.init()
-    this.fs.checkAndformatFiles({
-      ...this.playgroundSetup,
-      files: {
-        ...(template?.files ?? {}),
-        ...this.playgroundSetup.files,
-      }
-    })
-    this.message.set({ type: "success", message: "init-fs-successful" })
-
     // init preview
     this.preview.init()
     this.message.set({ type: "success", message: "init-preview-successful" })
@@ -64,65 +44,68 @@ export class Client {
     return true
   }
 
-  getTemplate() {
-    return getTemplate(this.playgroundSetup.template)
-  }
-
-  public async build(options: IBuildOptions = this.playgroundSetup.buildOptions) {
+  public async build() {
     this.message.set({ type: "normal", message: "building" })
     const startTimestamp = Date.now()
     const buildRes = await this.ipc.postMessage({
       type: "build",
-      options
+      options: this.playgroundSetup.buildOptions,
+      files: this.playgroundSetup.files
     })
-
     this.message.set({ type: "success", message: `build-success: ${Date.now() - startTimestamp}ms` })
 
-    if (this.playgroundSetup.template === "react") {
-      const htmlFile = await this.fs.get("/index.html")
+    if (this.playgroundSetup.defaultTemplate === "react") {
+      const htmlFile = this.playgroundSetup.files!["/index.html"]
       const html = generateHtml(htmlFile, buildRes.module)
       this.preview.setHtml(html)
     }
   }
 
-  public async updateOptions(options: ClientOptions): Promise<boolean> {
+  public async updateOptions(options: ClientOptions) {
     if (!deepEqual(this.options, options)) {
-      this.options = options
-      await this.updateSandbox()
+      this.options = {
+        ...this.options,
+        ...options
+      }
+      this.preview.update(this.options)
     }
-    return true
+  }
+
+
+  private updateTemplate() {
+    const template = getTemplate(this.playgroundSetup.defaultTemplate)
+    if (!template) {
+      this.playgroundSetup.files = addPackageJSONIfNeeded(this.playgroundSetup)
+      return
+    }
+    if (!this.playgroundSetup.buildOptions.entry) {
+      this.playgroundSetup.buildOptions.entry = template.entry
+    }
+    this.playgroundSetup.files = {
+      ...template.files,
+      ...this.playgroundSetup.files,
+    }
+    this.playgroundSetup.dependencies = {
+      ...template.dependices,
+      ...this.playgroundSetup.dependencies,
+    }
+    this.playgroundSetup.files = addPackageJSONIfNeeded(this.playgroundSetup)
+    this.message.set({ type: "success", message: "update-fs-successful" })
   }
 
   public async updateSandbox(
-    playgroundSetup = this.playgroundSetup,
-  ): Promise<boolean> {
+    playgroundSetup: PlaygroundSetup,
+  ) {
+    if (!!playgroundSetup.defaultTemplate && playgroundSetup.defaultTemplate !== this.playgroundSetup.defaultTemplate) {
+      this.message.set({ type: "warn", message: "The defaultTemplate takes effect only once and does not support updates" })
+    }
+
     this.playgroundSetup = {
       ...this.playgroundSetup,
       ...playgroundSetup,
     }
 
-    let files = this.playgroundSetup.files ?? {}
-
-    if (playgroundSetup.template !== this.playgroundSetup.template) {
-      this.fs.clear()
-      const template = this.getTemplate()
-      if (template) {
-        this.playgroundSetup.name = template.entry
-      }
-      files = {
-        ...(template?.files ?? {}),
-        ...this.playgroundSetup.files,
-      }
-    }
-
-    this.fs.checkAndformatFiles({
-      ...this.playgroundSetup,
-      files
-    })
-
-
+    this.updateTemplate()
     await this.build()
-
-    return true
   }
 }
