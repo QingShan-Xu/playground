@@ -1,7 +1,1 @@
 dist/
-packages/executors/.rts2_cache_cjs
-packages/executors/.rts2_cache_es
-packages/executors/.rts2_cache_umd
-packages/homepage/.cache
-packages/homepage/public
-static/
