@@ -25,13 +25,11 @@
     }
   },
   "scripts": {
-    "dev": "vite dev",
     "build": "vite build",
     "test": "vitest",
-    "clean": "pnpm dlx npkill",
-    "lint": "eslint",
     "format": "prettier --write '**/*.{ts,tsx,js,jsx}'",
-    "format:check": "prettier --check '**/*.{ts,tsx}'"
+    "format:check": "prettier --check '**/*.{ts,tsx}'",
+    "lint": "eslint \"**/*.ts?(x)\" --fix"
   },
   "files": [
     "dist",

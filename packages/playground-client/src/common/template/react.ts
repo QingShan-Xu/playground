@@ -1,4 +1,4 @@
-import { Dependencies, PlaygroundSetup } from "../../type"
+import type { Dependencies } from "../../type";
 
 export const ReactTemplate = {
   "/src/App.tsx": `import React from 'react';
@@ -65,10 +65,10 @@ export const ReactTemplate = {
     "react-dom": "18.0.0"
   }
   }`,
-}
+};
 
-export const ReactTemplateEntry = "/src/index.tsx"
+export const ReactTemplateEntry = "/src/index.tsx";
 export const ReactTemplateDependencies: Dependencies = {
-  "react": "18.0.0",
-  "react-dom": "18.0.0"
-}
+  react: "18.0.0",
+  "react-dom": "18.0.0",
+};

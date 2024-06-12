@@ -1,7 +1,7 @@
-import { defineConfig } from "vite"
-import dts from "vite-plugin-dts"
-import pkg from "./package.json"
-import replace from "@rollup/plugin-replace"
+import { defineConfig } from "vite";
+import dts from "vite-plugin-dts";
+import pkg from "./package.json";
+import replace from "@rollup/plugin-replace";
 
 export default defineConfig({
   build: {
@@ -37,4 +37,4 @@ export default defineConfig({
       },
     }),
   ],
-})
+});
