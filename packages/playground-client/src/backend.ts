@@ -1,35 +1,50 @@
 
 import { unpkgPlugin } from "./unpkgPlugin"
-import { bundleList, generateUrl } from "./utils"
-import { IIpc } from "./type"
-import _esbuild from "esbuild-wasm"
+import { bundleList, generateUrl, normalizePath } from "./utils"
+import { ExtractBackendFunc, IIpc } from "./type"
+import esbuild from "esbuild-wasm"
 
-declare global {
-  // eslint-disable-next-line no-var 
-  var esbuild: typeof _esbuild
-}
+let isEsbuildInit = false
 
 self.addEventListener("message", async ({ data }) => {
   try {
-    const result = await trigger(data.args)
-    postMessage({ result, ipcId: data.ipcId })
+    const values = await trigger(data.args)
+    postMessage({ result: { type: "success", ...values }, ipcId: data.ipcId })
   } catch (error) {
     postMessage({ error, ipcId: data.ipcId })
   }
 })
 
-const handleInitEsbuild = async () => {
-  importScripts("https://cdn.jsdelivr.net/npm/esbuild-wasm@0.21.4/lib/browser.min.js")
+const trigger = async (data: IIpc["client2Backend"]) => {
+  if (data.type === "init-esbuild") {
+    return handleInitEsbuild(data)
+  }
+
+  if (data.type === "build") {
+    return handleBuild(data)
+  }
+
+  throw new Error("Unknown command")
+}
+
+// esbuild初始化
+const handleInitEsbuild: ExtractBackendFunc<"init-esbuild"> = async () => {
+  if (isEsbuildInit) {
+    return { msg: "init-esbuild-successful" }
+  }
   await esbuild.initialize({
     wasmURL: "https://cdn.jsdelivr.net/npm/esbuild-wasm@0.21.4/esbuild.wasm",
     worker: false,
   })
-  return "init-esbuild-success"
+  isEsbuildInit = true
+  return { msg: "init-esbuild-successful" }
 }
 
-const handleBuild = async (
-  data: Extract<IIpc["client2Backend"], { type: "build" }>
-) => {
+// 打包
+const handleBuild: ExtractBackendFunc<"build"> = async (data) => {
+
+  data.files = normalizePath(data.files)
+  data.options.entry = normalizePath(data.options.entry)
   const mainRes = await esbuild.build({
     bundle: true,
     write: false,
@@ -50,17 +65,8 @@ const handleBuild = async (
     .forEach((bundle) => URL.revokeObjectURL(bundle.url))
   mainRes.outputFiles.forEach(generateUrl)
 
-  return bundleList
-}
-
-const trigger = async (data: IIpc["client2Backend"]) => {
-  switch (data.type) {
-    case "init-esbuild":
-      return handleInitEsbuild()
-    default:
-      if (data.type === "build") {
-        return handleBuild(data)
-      }
-      throw new Error("Unknown command")
+  return {
+    msg: "build-successful",
+    modules: bundleList
   }
 }

@@ -7,7 +7,7 @@ import type { Dependencies, PlaygroundBundlerFiles, PlaygroundSetup, PlaygroundT
 
 export const bundleList: Array<{ url: string; type: "js" | "css" }> = []
 
-const customStore = createStore("__node_modules", "playground_store")
+export const customStore = createStore("__node_modules", "playground_store")
 
 export const createError = (message: string): string =>
   `[playground-client]: ${message}`
@@ -188,15 +188,4 @@ export const generateHtml = (
     }
   })
   return dom.documentElement.outerHTML
-}
-
-export const isDev = "development"
-
-
-export const isWorkerContext = () => {
-  try {
-    return typeof window === 'undefined'
-  } catch (e) {
-    return true
-  }
 }

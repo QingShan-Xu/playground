@@ -5,9 +5,7 @@ export default defineProject({
     name: "playground-client",
     browser: {
       enabled: true,
-      provider: "playwright",
-      name: "chromium",
-      // name: 'chrome', // browser name is required
+      name: 'chrome',
     },
   },
 })

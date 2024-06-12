@@ -1,4 +1,12 @@
 
+export type ExtractBackendFunc<
+  T extends IIpc["client2Backend"]["type"],
+> = (arg: Extract<IIpc, { client2Backend: { type: T } }>["client2Backend"])
+    => (
+      | Promise<Omit<Extract<IIpc, { client2Backend: { type: T } }>["backend2Client"], "type">>
+      | Omit<Extract<IIpc, { client2Backend: { type: T } }>["backend2Client"], "type">
+    )
+
 export type PlaygroundSetup = {
   name: string
   files: PlaygroundBundlerFiles
@@ -9,16 +17,11 @@ export type PlaygroundSetup = {
   defaultTemplate?: PlaygroundTemplate
 }
 
-
 export interface ClientOptions {
-  // /**
-  //  * Paths to external resources
-  //  */
-  // externalResources?: string[]
-  // /**
-  //  * Relative path that the iframe loads (eg: /about)
-  //  */
-  // startRoute?: string
+  /**
+   * todo: Paths to external resources
+   */
+  externalResources?: string[]
   /**
    * Width of iframe.
    */
@@ -44,7 +47,7 @@ export type ClientStatus =
 
 export interface IMessage {
   message: string
-  type: "success" | "warn" | "error" | "normal"
+  type: "success" | "warning" | "error" | "info"
 }
 
 export type IBuildOptions = {
@@ -54,7 +57,7 @@ export type IBuildOptions = {
 /**
  * 打包完成后由后端发往前端的模块列表
  */
-export type IModules = Array<{ url: string; type: "js" | "css" }>
+export type IModule = { url: string; type: "js" | "css" }
 
 export type IIpc =
   | {
@@ -65,8 +68,8 @@ export type IIpc =
     },
     backend2Client: {
       type: "success",
-      msg: "init-build-successful",
-      module: IModules
+      msg: "build-successful",
+      modules: Array<IModule>
     }
   }
   | {

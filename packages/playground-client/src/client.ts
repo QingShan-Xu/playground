@@ -45,7 +45,7 @@ export class Client {
   }
 
   public async build() {
-    this.message.set({ type: "normal", message: "building" })
+    this.message.set({ type: "info", message: "building" })
     const startTimestamp = Date.now()
     const buildRes = await this.ipc.postMessage({
       type: "build",
@@ -56,7 +56,7 @@ export class Client {
 
     if (this.playgroundSetup.defaultTemplate === "react") {
       const htmlFile = this.playgroundSetup.files!["/index.html"]
-      const html = generateHtml(htmlFile, buildRes.module)
+      const html = generateHtml(htmlFile, buildRes.modules)
       this.preview.setHtml(html)
     }
   }
@@ -97,7 +97,7 @@ export class Client {
     playgroundSetup: PlaygroundSetup,
   ) {
     if (!!playgroundSetup.defaultTemplate && playgroundSetup.defaultTemplate !== this.playgroundSetup.defaultTemplate) {
-      this.message.set({ type: "warn", message: "The defaultTemplate takes effect only once and does not support updates" })
+      this.message.set({ type: "warning", message: "The defaultTemplate takes effect only once and does not support updates" })
     }
 
     this.playgroundSetup = {

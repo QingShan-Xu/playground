@@ -54,7 +54,7 @@ export class Ipc {
       // 超时
       const timer = setTimeout(() => {
         this.callBackFuncs.delete(this.ipcId)
-        reject(new Error("Request timed out: " + JSON.stringify(args)))
+        reject(new Error("Request timed out: " + JSON.stringify(timeout)))
       }, timeout)
 
       this.callBackFuncs.set(this.ipcId, {
