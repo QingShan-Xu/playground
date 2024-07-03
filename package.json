@@ -8,6 +8,7 @@
     "test": "vitest --ui",
     "clean": "pnpm dlx npkill",
     "lint": "turbo lint",
+    "dev": "turbo dev",
     "build": "turbo build",
     "build:client": "turbo build --filter playground-client",
     "new-version": "lerna version",
