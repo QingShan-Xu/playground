@@ -1,5 +1,5 @@
 import pathBrowser from "path-browserify";
 
-export { Client } from "./core/client";
-export * from "./types";
+export { Client } from "./client";
+export * from "./type";
 export { pathBrowser };
