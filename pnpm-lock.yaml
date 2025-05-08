@@ -37,7 +37,7 @@ importers:
         version: 1.6.0(vitest@1.6.0)
       '@vitest/web-worker':
         specifier: ^1.6.0
-        version: 1.6.0(vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(@vitest/ui@1.6.0)(less@4.2.0))
+        version: 1.6.0(vitest@1.6.0)
       eslint:
         specifier: 8.38.0
         version: 8.38.0
@@ -79,12 +79,37 @@ importers:
         version: 3.9.1(@types/node@20.14.2)(rollup@4.18.0)(typescript@5.4.5)(vite@5.2.12(@types/node@20.14.2)(less@4.2.0))
       vitest:
         specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0)(webdriverio@8.38.2(encoding@0.1.13)(typescript@5.4.5)))(@vitest/ui@1.6.0(vitest@1.6.0))(less@4.2.0)
+        version: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(@vitest/ui@1.6.0)(less@4.2.0)
       webdriverio:
         specifier: ^8.38.2
         version: 8.38.2(encoding@0.1.13)(typescript@5.4.5)
 
   packages/playground-client:
+    dependencies:
+      dequal:
+        specifier: 2.0.3
+        version: 2.0.3
+      esbuild-wasm:
+        specifier: ^0.21.4
+        version: 0.21.4
+      idb-keyval:
+        specifier: 6.2.1
+        version: 6.2.1
+      localforage:
+        specifier: ^1.10.0
+        version: 1.10.0
+      outvariant:
+        specifier: ^1.4.2
+        version: 1.4.2
+      path-browserify:
+        specifier: ^1.0.1
+        version: 1.0.1
+    devDependencies:
+      '@types/path-browserify':
+        specifier: ^1.0.2
+        version: 1.0.2
+
+  packages/playground-client copy:
     dependencies:
       dequal:
         specifier: 2.0.3
@@ -125,7 +150,7 @@ importers:
         version: 1.0.2(@types/react@18.3.3)(react@18.3.1)
       '@xqcc/playground-client':
         specifier: workspace:*
-        version: link:../playground-client
+        version: link:../playground-client copy
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -177,7 +202,7 @@ importers:
         version: 8.1.6(@types/react-dom@18.3.0)(@types/react@18.3.3)(encoding@0.1.13)(prettier@3.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/addon-interactions':
         specifier: ^8.1.5
-        version: 8.1.6(vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0)(webdriverio@8.38.2(encoding@0.1.13)(typescript@5.4.5)))(@vitest/ui@1.6.0(vitest@1.6.0))(less@4.2.0))
+        version: 8.1.6(vitest@1.6.0)
       '@storybook/addon-links':
         specifier: ^8.1.5
         version: 8.1.6(react@18.3.1)
@@ -195,7 +220,7 @@ importers:
         version: 8.1.6(encoding@0.1.13)(prettier@3.3.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.18.0)(typescript@5.4.5)(vite@5.2.12(@types/node@20.14.2)(less@4.2.0))
       '@storybook/test':
         specifier: ^8.1.5
-        version: 8.1.6(vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0)(webdriverio@8.38.2(encoding@0.1.13)(typescript@5.4.5)))(@vitest/ui@1.6.0(vitest@1.6.0))(less@4.2.0))
+        version: 8.1.6(vitest@1.6.0)
       '@types/lodash':
         specifier: ^4.17.4
         version: 4.17.4
@@ -3406,6 +3431,7 @@ packages:
   eslint@8.38.0:
     resolution: {integrity: sha512-pIdsD2jwlUGf/U38Jv97t8lq6HpaU/G9NKbYmpWpZGw3LdTNhZLbJePqxOXGB5+JEKfOPU/XLxYxFh03nr1KTg==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@9.6.1:
@@ -4341,6 +4367,9 @@ packages:
     resolution: {integrity: sha512-26zzwoBNAvX9AWOPiqqF6FG4HrSCPsHFkQm7nT+xU1ggAujL/eae81RnCv4CJ2In9q9fh10B88sYSzKCUh/Ghg==}
     engines: {node: ^16.14.0 || >=18.0.0}
 
+  lie@3.1.1:
+    resolution: {integrity: sha512-RiNhHysUjhrDQntfYSfY4MU24coXXdEOgw9WGcKHNeEwffDYbF//u87M1EWaMGzuFoSbqW0C9C6lEEhDOAswfw==}
+
   lie@3.3.0:
     resolution: {integrity: sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==}
 
@@ -4366,6 +4395,9 @@ packages:
   local-pkg@0.5.0:
     resolution: {integrity: sha512-ok6z3qlYyCDS4ZEU27HaU6x/xZa9Whf8jD4ptH5UZTQYZVYeb9bnZ3ojVhiJNLiXK1Hfc0GNbLXcmZ5plLDDBg==}
     engines: {node: '>=14'}
+
+  localforage@1.10.0:
+    resolution: {integrity: sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==}
 
   locate-app@2.4.15:
     resolution: {integrity: sha512-oAGHATXPUHSQ74Om+3dXBRNYtCzU7Wzuhlj/WIZchqHb/5/TGJRzLEtHipMDOak0UZG9U365RMXyBzgV/fhOww==}
@@ -4394,9 +4426,11 @@ packages:
 
   lodash.get@4.4.2:
     resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
+    deprecated: This package is deprecated. Use the optional chaining (?.) operator instead.
 
   lodash.isequal@4.5.0:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
+    deprecated: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
@@ -4680,6 +4714,7 @@ packages:
   node-domexception@1.0.0:
     resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
     engines: {node: '>=10.5.0'}
+    deprecated: Use your platform's native DOMException instead
 
   node-fetch-native@1.6.4:
     resolution: {integrity: sha512-IhOigYzAKHd244OC0JIMIUrjzctirCmPkaIfhDeGcEETWof5zKYUW7e7MYvChGWh/4CJeXEgsRyGzuF334rOOQ==}
@@ -8431,11 +8466,11 @@ snapshots:
     dependencies:
       '@storybook/global': 5.0.0
 
-  '@storybook/addon-interactions@8.1.6(vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0)(webdriverio@8.38.2(encoding@0.1.13)(typescript@5.4.5)))(@vitest/ui@1.6.0(vitest@1.6.0))(less@4.2.0))':
+  '@storybook/addon-interactions@8.1.6(vitest@1.6.0)':
     dependencies:
       '@storybook/global': 5.0.0
       '@storybook/instrumenter': 8.1.6
-      '@storybook/test': 8.1.6(vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0)(webdriverio@8.38.2(encoding@0.1.13)(typescript@5.4.5)))(@vitest/ui@1.6.0(vitest@1.6.0))(less@4.2.0))
+      '@storybook/test': 8.1.6(vitest@1.6.0)
       '@storybook/types': 8.1.6
       polished: 4.3.1
       ts-dedent: 2.2.0
@@ -8941,14 +8976,14 @@ snapshots:
       - prettier
       - supports-color
 
-  '@storybook/test@8.1.6(vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0)(webdriverio@8.38.2(encoding@0.1.13)(typescript@5.4.5)))(@vitest/ui@1.6.0(vitest@1.6.0))(less@4.2.0))':
+  '@storybook/test@8.1.6(vitest@1.6.0)':
     dependencies:
       '@storybook/client-logger': 8.1.6
       '@storybook/core-events': 8.1.6
       '@storybook/instrumenter': 8.1.6
       '@storybook/preview-api': 8.1.6
       '@testing-library/dom': 9.3.4
-      '@testing-library/jest-dom': 6.4.5(vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0)(webdriverio@8.38.2(encoding@0.1.13)(typescript@5.4.5)))(@vitest/ui@1.6.0(vitest@1.6.0))(less@4.2.0))
+      '@testing-library/jest-dom': 6.4.5(vitest@1.6.0)
       '@testing-library/user-event': 14.5.2(@testing-library/dom@9.3.4)
       '@vitest/expect': 1.3.1
       '@vitest/spy': 1.6.0
@@ -8991,7 +9026,7 @@ snapshots:
       lz-string: 1.5.0
       pretty-format: 27.5.1
 
-  '@testing-library/jest-dom@6.4.5(vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0)(webdriverio@8.38.2(encoding@0.1.13)(typescript@5.4.5)))(@vitest/ui@1.6.0(vitest@1.6.0))(less@4.2.0))':
+  '@testing-library/jest-dom@6.4.5(vitest@1.6.0)':
     dependencies:
       '@adobe/css-tools': 4.4.0
       '@babel/runtime': 7.24.7
@@ -9002,7 +9037,7 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
     optionalDependencies:
-      vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0)(webdriverio@8.38.2(encoding@0.1.13)(typescript@5.4.5)))(@vitest/ui@1.6.0(vitest@1.6.0))(less@4.2.0)
+      vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(@vitest/ui@1.6.0)(less@4.2.0)
 
   '@testing-library/user-event@14.5.2(@testing-library/dom@9.3.4)':
     dependencies:
@@ -9266,7 +9301,7 @@ snapshots:
       '@vitest/utils': 1.6.0
       magic-string: 0.30.10
       sirv: 2.0.4
-      vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0)(webdriverio@8.38.2(encoding@0.1.13)(typescript@5.4.5)))(@vitest/ui@1.6.0(vitest@1.6.0))(less@4.2.0)
+      vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(@vitest/ui@1.6.0)(less@4.2.0)
     optionalDependencies:
       playwright: 1.44.1
       webdriverio: 8.38.2(encoding@0.1.13)(typescript@5.4.5)
@@ -9312,7 +9347,7 @@ snapshots:
       pathe: 1.1.2
       picocolors: 1.0.1
       sirv: 2.0.4
-      vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0)(webdriverio@8.38.2(encoding@0.1.13)(typescript@5.4.5)))(@vitest/ui@1.6.0(vitest@1.6.0))(less@4.2.0)
+      vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(@vitest/ui@1.6.0)(less@4.2.0)
 
   '@vitest/utils@1.3.1':
     dependencies:
@@ -9328,10 +9363,10 @@ snapshots:
       loupe: 2.3.7
       pretty-format: 29.7.0
 
-  '@vitest/web-worker@1.6.0(vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(@vitest/ui@1.6.0)(less@4.2.0))':
+  '@vitest/web-worker@1.6.0(vitest@1.6.0)':
     dependencies:
       debug: 4.3.5
-      vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0)(webdriverio@8.38.2(encoding@0.1.13)(typescript@5.4.5)))(@vitest/ui@1.6.0(vitest@1.6.0))(less@4.2.0)
+      vitest: 1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(@vitest/ui@1.6.0)(less@4.2.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -11771,6 +11806,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  lie@3.1.1:
+    dependencies:
+      immediate: 3.0.6
+
   lie@3.3.0:
     dependencies:
       immediate: 3.0.6
@@ -11789,6 +11828,10 @@ snapshots:
     dependencies:
       mlly: 1.7.1
       pkg-types: 1.1.1
+
+  localforage@1.10.0:
+    dependencies:
+      lie: 3.1.1
 
   locate-app@2.4.15:
     dependencies:
@@ -13882,7 +13925,7 @@ snapshots:
       fsevents: 2.3.3
       less: 4.2.0
 
-  vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0(playwright@1.44.1)(vitest@1.6.0)(webdriverio@8.38.2(encoding@0.1.13)(typescript@5.4.5)))(@vitest/ui@1.6.0(vitest@1.6.0))(less@4.2.0):
+  vitest@1.6.0(@types/node@20.14.2)(@vitest/browser@1.6.0)(@vitest/ui@1.6.0)(less@4.2.0):
     dependencies:
       '@vitest/expect': 1.6.0
       '@vitest/runner': 1.6.0

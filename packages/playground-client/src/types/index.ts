@@ -1,16 +1,16 @@
 export type ExtractBackendFunc<T extends IIpc["client2Backend"]["type"]> = (
-  arg: Extract<IIpc, { client2Backend: { type: T } }>["client2Backend"],
+  arg: Extract<IIpc, { client2Backend: { type: T; }; }>["client2Backend"],
 ) =>
   | Promise<
-      Omit<
-        Extract<IIpc, { client2Backend: { type: T } }>["backend2Client"],
-        "type"
-      >
-    >
-  | Omit<
-      Extract<IIpc, { client2Backend: { type: T } }>["backend2Client"],
+    Omit<
+      Extract<IIpc, { client2Backend: { type: T; }; }>["backend2Client"],
       "type"
-    >;
+    >
+  >
+  | Omit<
+    Extract<IIpc, { client2Backend: { type: T; }; }>["backend2Client"],
+    "type"
+  >;
 
 export interface PlaygroundSetup {
   name: string;
@@ -69,23 +69,49 @@ export interface IModule {
 
 export type IIpc =
   | {
-      client2Backend: {
-        type: "build";
-        options: IBuildOptions;
-        files: PlaygroundBundlerFiles;
-      };
-      backend2Client: {
-        type: "success";
-        msg: "build-successful";
-        modules: IModule[];
-      };
-    }
-  | {
-      client2Backend: {
-        type: "init-esbuild";
-      };
-      backend2Client: {
-        type: "success";
-        msg: "init-esbuild-successful";
-      };
+    client2Backend: {
+      type: "build";
+      options: IBuildOptions;
+      files: PlaygroundBundlerFiles;
     };
+    backend2Client: {
+      type: "success";
+      msg: "build-successful";
+      modules: IModule[];
+    };
+  }
+  | {
+    client2Backend: {
+      type: "init-esbuild";
+    };
+    backend2Client: {
+      type: "success";
+      msg: "init-esbuild-successful";
+    };
+  };
+
+
+// 打包配置项
+export interface IPlaygroundBundleOptions<TFILES extends Record<string, string>> {
+  /**
+   * 入口文件
+   */
+  entry: keyof TFILES;
+  /**
+   * 文件列表
+   */
+  files: TFILES;
+  /**
+   * package.json 文件
+   */
+  packageJson: keyof TFILES | {
+    /**
+     * 依赖
+     */
+    dependencies: Record<string, string>;
+    /**
+     * 开发依赖
+     */
+    devDependencies: Record<string, string>;
+  };
+}

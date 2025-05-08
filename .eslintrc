@@ -8,7 +8,7 @@
     // TypeScript specific rules
     "plugin:@typescript-eslint/recommended",
     // Disable eslint rules that conflict with Prettier's formatting
-    "prettier"
+    "prettier",
   ],
   "parser": "@typescript-eslint/parser",
   "rules": {
@@ -26,22 +26,19 @@
     "@typescript-eslint/consistent-type-imports": [
       "error",
       {
-        "prefer": "type-imports"
-      }
+        "prefer": "type-imports",
+      },
     ],
     // Declare simple arrays as string[], declare complex ones as Array<string | number>
     "@typescript-eslint/array-type": [
       "error",
       {
-        "default": "array-simple"
-      }
+        "default": "array-simple",
+      },
     ],
 
     // Enforce PascalCase types and interfaces
-    "@typescript-eslint/naming-convention": [
-      "error",
-      { "selector": "typeLike", "format": ["PascalCase"] }
-    ],
+    "@typescript-eslint/naming-convention": ["error", { "selector": "typeLike", "format": ["PascalCase"] }],
 
     // Consistently sort props
     "react/jsx-sort-props": [
@@ -51,8 +48,8 @@
         // key, ref must always come first
         "reservedFirst": true,
         // `true` shorthand props must always be last
-        "shorthandLast": true
-      }
+        "shorthandLast": true,
+      },
     ],
     // Always use shorthand for `true`
     "react/jsx-boolean-value": "error",
@@ -70,18 +67,18 @@
           // 3. relative imports
           "parent",
           // 4. relative imports in the same directory
-          "sibling"
+          "sibling",
         ],
         // Add an empty line between import groups.
         "newlines-between": "always",
         // Sort imports alphabetically
         "alphabetize": {
-          "order": "asc"
-        }
-      }
-    ]
+          "order": "asc",
+        },
+      },
+    ],
   },
   "settings": {
-    "version": "detect"
-  }
+    "version": "detect",
+  },
 }
