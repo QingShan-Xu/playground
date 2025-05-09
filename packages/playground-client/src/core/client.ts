@@ -17,4 +17,5 @@ export class Client {
     this.devDependencies = devDependencies;
     this.dependencies = dependencies;
   }
+
 }

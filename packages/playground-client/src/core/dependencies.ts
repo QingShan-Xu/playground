@@ -9,11 +9,14 @@ interface IDependencyStrategy {
   download(name: string, version: string): Promise<Record<string, string>>;
 }
 
+/**
+ * 依赖
+ */
 export class Dependency {
   constructor(
     public name: string,
     public version: string,
-    public defaultFiles: Record<string, string>
+    public defaultFiles?: Record<string, string>
   ) { }
 
   async download(strategies: IDependencyStrategy[]): Promise<Record<string, string>> {
@@ -37,58 +40,83 @@ export class Dependency {
   }
 }
 
-
-interface IDependenciesOptions {
-  /**
-   * 默认依赖
-   */
-  defaultDependencies: Record<string, string>,
-  /**
-   * 依赖策略
-   */
-  defaultStrategy: IDependencyStrategy[],
-  /**
-   * 存储DB
-   */
-  db: IDB,
-};
-
 /**
- * 依赖
+ * 依赖管理
  */
 export class Dependencies {
   private static instance: Dependencies;
   private dependencies: Dependency[] = [];
-  private strategy: IDependencyStrategy[];
-  private db: IDB;
 
   private constructor(
-    options: IDependenciesOptions
+    /**
+     * 默认依赖
+     */
+    defaultDependencies: Array<{ name: string, version: string, defaultFiles?: Record<string, string>; }>,
+    /**
+     * 依赖策略
+     */
+    private strategy: IDependencyStrategy[],
+    /**
+     * 存储DB
+     */
+    private db: IDB,
   ) {
-    this.strategy = options.defaultStrategy;
-    this.db = options.db;
+    defaultDependencies.forEach(({ name, version, defaultFiles }) => {
+      this.addDependency(name, version, defaultFiles);
+    });
   }
 
-  static getInstance(options: IDependenciesOptions) {
+  static getInstance(
+    /**
+    * 默认依赖
+    */
+    defaultDependencies: Array<{ name: string, version: string, defaultFiles?: Record<string, string>; }>,
+    /**
+     * 依赖策略
+     */
+    strategy: IDependencyStrategy[],
+    /**
+     * 存储DB
+     */
+    db: IDB,
+  ) {
     if (!this.instance) {
-      this.instance = new Dependencies(options);
+      this.instance = new Dependencies(defaultDependencies, strategy, db);
     }
     return this.instance;
   }
 
-  async getDependencies() {
-    return;
+  /**
+   * 获取依赖
+   */
+  async getDependency(name: string, version: string): Promise<Record<string, string> | undefined> {
+    const dependency = this.dependencies.find(item => item.name === name && item.version === version);
+
+    if (!dependency) {
+      return undefined;
+    }
+
+    let cacheValue = await this.db.getValue<Record<string, string>>([name, version]);
+    if (cacheValue) {
+      return cacheValue;
+    }
+
+    cacheValue = await dependency.download(this.strategy);
+    if (cacheValue) {
+      await this.db.setValue([name, version], cacheValue);
+    }
+
+    return cacheValue;
   }
 
-  async getDependency(name: string) {
-    return;
-  }
-
-  async addDependency(name: string, version: string) {
-    return;
-  }
-
-  async removeDependency(name: string) {
+  /**
+   * 添加依赖
+   * @param name 依赖名称
+   * @param version 依赖版本
+   * @param defaultFiles 默认文件
+   */
+  async addDependency(name: string, version: string, defaultFiles?: Record<string, string>) {
+    this.dependencies.push(new Dependency(name, version, defaultFiles));
     return;
   }
 
