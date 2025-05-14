@@ -1,8 +1,6 @@
 import type { Loader, LogLevel } from "esbuild-wasm";
 
-import type { IIpcMsg2Main, IIpcMsg2Worker } from "./ipc";
-
-export interface IEsbuildWorkerBuildOptions {
+export interface IEsbuildBuildOptions {
   /**
    * 压缩
    * @default false
@@ -59,7 +57,7 @@ export interface IEsbuildWorkerBuildOptions {
 }
 
 
-export interface IEsbuildWorker {
-  bundle: (params: Extract<IIpcMsg2Worker, { type: "build"; }>) => Promise<Extract<IIpcMsg2Main, { type: "build-suc"; } | { type: "build-err"; }>>;
-  initEsbuild: (params: Extract<IIpcMsg2Worker, { type: "init-esbuild"; }>) => Promise<Extract<IIpcMsg2Main, { type: "init-esbuild-suc"; } | { type: "init-esbuild-err"; }>>;
+export interface IEsbuildClient {
+  build: (buildOptions: IEsbuildBuildOptions) => Promise<void>;
+  init: (wasmURL: string) => Promise<void>;
 }

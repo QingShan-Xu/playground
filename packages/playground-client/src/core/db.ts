@@ -14,7 +14,6 @@ interface IOptions extends LocalForageOptions {
   driver: IDriver;
 }
 
-
 export class DB implements IDB {
   instance: LocalForage;
   driver: typeof E_DRIVER[IDriver];

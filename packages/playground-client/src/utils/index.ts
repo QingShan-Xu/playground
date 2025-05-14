@@ -15,12 +15,11 @@ import type {
   PlaygroundTemplate,
 } from "../types";
 
-export const bundleList: Array<{ url: string; type: "js" | "css" }> = [];
+export const bundleList: Array<{ url: string; type: "js" | "css"; }> = [];
 
 export const customStore = createStore("__node_modules", "playground_store");
 
-export const createError = (message: string): string =>
-  `[playground-client]: ${message}`;
+export const createError = (message: string): string => `[playground-client]: ${message}`;
 
 export function nullthrows<T>(
   value: T | null | undefined,
@@ -124,10 +123,10 @@ export const normalizePath = <R>(path: R): R => {
 
 export function getTemplate(type?: PlaygroundTemplate):
   | {
-      files: PlaygroundBundlerFiles;
-      entry: string;
-      dependices: Dependencies;
-    }
+    files: PlaygroundBundlerFiles;
+    entry: string;
+    dependices: Dependencies;
+  }
   | undefined {
   if (type === "react") {
     return {
